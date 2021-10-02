@@ -1,49 +1,149 @@
 //  TODO
-//  - add hub/spoke
 //  - add peerings
-//  - fix example below for aks networks
-//  - add resource groups
-//  - add network watcher
 //  - get working in pipeline
+//  - add nsgs
+//  - add udrs
 
-param vnetDeploymentName string = 'vnet${utcNow()}'
+targetScope = 'subscription'
+/*======================================================================
+GLOBAL VARIABLES
+======================================================================*/
+var location = 'AustraliaEast'
+var primaryLocationCode = 'syd'
+var tags = {
+  project: 'tk-421'
+  environment: 'dev'
+}
+/*======================================================================
+RESOURCE GROUPS
+======================================================================*/
+var networkResourceGroup = 'dev-network-rgp'
 
-module vnet '../../modules/vnet/main.bicep' = {
-  name: vnetDeploymentName
+resource networkRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: networkResourceGroup
+  location: location
+  tags: tags
+}
+/*======================================================================
+NEWORK WATCHER
+======================================================================*/
+var networkWatcherName = 'dev-${primaryLocationCode}-nww'
+
+param nwDeploymentName string = 'networkWatcher${utcNow()}'
+
+module networkWatcher '../../modules/network-watcher/main.bicep' = {
+  name: nwDeploymentName
+  scope: resourceGroup(networkRG.name)
   params: {
-    vnetName: 'test-vnet-05'
-    location: resourceGroup().location
-    vnetAddressSpace: [
-      '10.0.0.0/16'
-      '192.168.0.0/24'
-    ]
-    dnsServers: [
-      '10.0.0.1'
-      '10.0.0.2'
-    ]
-    subnets: [
-      {
-        name: 'subnet1'
-        addressPrefix: '10.0.1.0/24'
-        privateEndpointNetworkPolicies: 'disabled'
-        privateLinkServiceNetworkPolicies: 'disabled'
-        delegation: 'Microsoft.Web/serverFarms'
-        natgatewayId: '/subscriptions/200ef0b6-6c4f-4c21-a331-f8301096bac9/resourceGroups/network/providers/Microsoft.Network/natGateways/nat1'
-        nsgId: '/subscriptions/200ef0b6-6c4f-4c21-a331-f8301096bac9/resourceGroups/network/providers/Microsoft.Network/networkSecurityGroups/nsg1'
-        udrId: '/subscriptions/200ef0b6-6c4f-4c21-a331-f8301096bac9/resourceGroups/network/providers/Microsoft.Network/routeTables/udr1'
-        serviceEndpoints: [
-          {
-            service: 'Microsoft.Web'
-          }
-          {
-            service: 'Microsoft.Storage'
-          }
-        ]
-      }
-    ]
-    enableDeleteLock: true
-    enableDiagnostics: true
-    logAnalyticsWorkspaceId: '/subscriptions/200ef0b6-6c4f-4c21-a331-f8301096bac9/resourcegroups/temp/providers/microsoft.operationalinsights/workspaces/law1'
-    diagnosticStorageAccountId: '/subscriptions/200ef0b6-6c4f-4c21-a331-f8301096bac9/resourceGroups/temp/providers/Microsoft.Storage/storageAccounts/ajbdiags01'
+    networkWatcherName: networkWatcherName
+    location: location
+  }
+}
+/*======================================================================
+VIRTUAL NETWORKS
+======================================================================*/
+var vnetHubName = 'dev-${primaryLocationCode}-hub-vnw'
+var vnetHubAddressSpace = [
+  '10.20.0.0/24'
+]
+var vnetHubSubnets = [
+  {
+    name: 'AzureFirewallSubnet'
+    addressPrefix: '10.20.0.0/26'
+    privateEndpointNetworkPolicies: 'disabled'
+    privateLinkServiceNetworkPolicies: 'disabled'
+    delegation: null
+    natgatewayId: null
+    nsgId: null
+    udrId: null
+    serviceEndpoints: null
+  }
+  {
+    name: 'GatewaySubnet'
+    addressPrefix: '10.20.0.64/27'
+    privateEndpointNetworkPolicies: 'disabled'
+    privateLinkServiceNetworkPolicies: 'disabled'
+    delegation: null
+    natgatewayId: null
+    nsgId: null
+    udrId: null
+    serviceEndpoints: null
+  }
+  {
+    name: 'AzureBastionSubnet'
+    addressPrefix: '10.20.0.96/27'
+    privateEndpointNetworkPolicies: 'disabled'
+    privateLinkServiceNetworkPolicies: 'disabled'
+    delegation: null
+    natgatewayId: null
+    nsgId: null // add nsg
+    udrId: null
+    serviceEndpoints: null
+  }
+  {
+    name: 'AzureWAFSubnet'
+    addressPrefix: '10.20.0.128/28'
+    privateEndpointNetworkPolicies: 'disabled'
+    privateLinkServiceNetworkPolicies: 'disabled'
+    delegation: null
+    natgatewayId: null
+    nsgId: null // add nsg
+    udrId: null
+    serviceEndpoints: null
+  }
+]
+
+param vnetHubDeploymentName string = 'vnetHub${utcNow()}'
+
+module vnetHub '../../modules/vnet/main.bicep' = {
+  name: vnetHubDeploymentName
+  scope: resourceGroup(networkRG.name)
+  params: {
+    vnetName: vnetHubName
+    location: location
+    vnetAddressSpace: vnetHubAddressSpace
+    subnets: vnetHubSubnets
+  }
+}
+
+var vnetSpokeName = 'dev-${primaryLocationCode}-workload1-vnw'
+var vnetSpokeAddressSpace = [
+  '10.24.0.0/16'
+]
+var vnetSpokeSubnets = [
+  {
+    name: 'AksNodes'
+    addressPrefix: '10.24.0.0/22'
+    privateEndpointNetworkPolicies: 'disabled'
+    privateLinkServiceNetworkPolicies: 'enabled'
+    delegation: null
+    natgatewayId: null
+    nsgId: null //add nsg
+    udrId: null //add udr
+    serviceEndpoints: null
+  }
+  {
+    name: 'AksIngressServices'
+    addressPrefix: '10.24.4.0/28'
+    privateEndpointNetworkPolicies: 'disabled'
+    privateLinkServiceNetworkPolicies: 'disabled'
+    delegation: null
+    natgatewayId: null
+    nsgId: null // add nsg
+    udrId: null // add udr
+    serviceEndpoints: null
+  }
+]
+
+param vnetSpokeDeploymentName string = 'vnetSpoke${utcNow()}'
+
+module vnetSpoke '../../modules/vnet/main.bicep' = {
+  name: vnetSpokeDeploymentName
+  scope: resourceGroup(networkRG.name)
+  params: {
+    vnetName: vnetSpokeName
+    location: location
+    vnetAddressSpace: vnetSpokeAddressSpace
+    subnets: vnetSpokeSubnets
   }
 }
