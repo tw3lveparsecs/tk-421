@@ -2,8 +2,8 @@ name: Aad-Integration-CI
 
 # Controls when the workflow will run
 on:  
-#   push:
-#     branches: [ main ]
+  push:
+    branches: [ feature/aad-integration ]
 #   pull_request:
 #     branches: [ main ]
 
