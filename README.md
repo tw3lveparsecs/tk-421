@@ -31,4 +31,6 @@ All issues with the **help wanted** are available for any team member to work on
 No branch protection rules can be used on free GitHub repos therefore any unwanted merges to main branch will be removed and a you break it you fix policy is in place. 
 
 When working on new code create a new feature branch and work directly from there. 
-When ready to merge with main create a PR and assign to @tw3lveparsecs
+When ready to merge with main create a PR into the develop branch and assign to @tw3lveparsecs
+
+Code will be deployed/tested from develop branch and when ready and merged into main.
