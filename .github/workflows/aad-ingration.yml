@@ -24,7 +24,8 @@ jobs:
 
       - name: Run Az CLI script
         run: |
-          az account show
+          ls -la
+          # az account show
 
       - name: Run Azure PowerShell script
         uses: azure/powershell@v1
