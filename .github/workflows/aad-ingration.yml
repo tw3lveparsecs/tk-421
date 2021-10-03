@@ -24,10 +24,10 @@ jobs:
 
       - name: Set variables
         run: |
-          export AZURE_TENANTID=$(az account show --query tenantId -o tsv)          
-          # export AZURE_TENANTDOMAIN=$(az ad signed-in-user show --query 'userPrincipalName' -o tsv | cut -d '@' -f 2 | sed 's/\"//')
-          az ad signed-in-user show
-          # echo $AZURE_TENANTDOMAIN
+          AZURE_TOKEN=$(az account get-access-token --resource-type ms-graph --query accessToken --output tsv)
+          export AZURE_TENANTDOMAIN=$(curl --header "Authorization: Bearer ${AZURE_TOKEN}" --request GET 'https://graph.microsoft.com/v1.0/domains' | jq -r '.value[] | select(.isDefault == true) | {id}[]')
+          export AZURE_TENANTID=$(az account show --query tenantId -o tsv)                              
+          echo $AZURE_TENANTDOMAIN
           
       # - name: Run Azure PowerShell script
       #   uses: azure/powershell@v1
