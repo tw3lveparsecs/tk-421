@@ -1,7 +1,12 @@
 [
     {
-        "displayName": "aks-cluster-admin",
-        "userPrincipalName": "aks-cluster-admin",
-        "description": ""
+        "displayName": "aks-cluster-admin1",
+        "userPrincipalName": "aks-cluster-admin1",
+        "description": "AKS Cluster Admin 1"
+    },
+    {
+        "displayName": "aks-cluster-admin2",
+        "userPrincipalName": "aks-cluster-admin2",
+        "description": "AKS Cluster Admin 2"
     }
 ]

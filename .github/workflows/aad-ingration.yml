@@ -26,9 +26,18 @@ jobs:
         run: |
           AZURE_TOKEN=$(az account get-access-token --resource-type ms-graph --query accessToken --output tsv)
           export AZURE_TENANTDOMAIN=$(curl -s --header "Authorization: Bearer ${AZURE_TOKEN}" --request GET 'https://graph.microsoft.com/v1.0/domains' | jq -r '.value[] | select(.isDefault == true) | {id}[]')
-          export AZURE_TENANTID=$(az account show --query tenantId -o tsv)                              
-          echo $AZURE_TENANTDOMAIN
-          
+          export AZURE_TENANTID=$(az account show --query tenantId -o tsv)                                        
+      
+      - name: Create users (echo)
+        run: |          
+          AZURE_AKS_USERS=$(cat .github/variables/aad/aksusers.json | jq -c)
+          for row in $(echo "${AZURE_AKS_USERS}" | jq -c '.[]'); do
+              _jq() {
+                echo ${row} | jq -r ${1}
+              }
+            echo $(_jq '.displayName') $(_jq '.userPrincipalName') $(_jq '.description')
+          done
+
       # - name: Run Azure PowerShell script
       #   uses: azure/powershell@v1
       #   with:
