@@ -25,11 +25,12 @@ jobs:
       - name: Run Az CLI script
         run: |
           ls -la
+          jq --version
           # az account show
 
-      - name: Run Azure PowerShell script
-        uses: azure/powershell@v1
-        with:
-          azPSVersion: 'latest'
-          inlineScript: |
-            Get-AzContext
+      # - name: Run Azure PowerShell script
+      #   uses: azure/powershell@v1
+      #   with:
+      #     azPSVersion: 'latest'
+      #     inlineScript: |
+      #       Get-AzContext
