@@ -24,10 +24,10 @@ jobs:
 
       - name: Set variables
         run: |
-          export AZURE_TENANTID=$(az account show --query tenantId -o tsv)
-          echo $AZURE_TENANTID
-          export AZURE_TENANTDOMAIN=$(az ad signed-in-user show --query 'userPrincipalName' -o tsv | cut -d '@' -f 2 | sed 's/\"//')
-          echo $AZURE_TENANTDOMAIN
+          export AZURE_TENANTID=$(az account show --query tenantId -o tsv)          
+          # export AZURE_TENANTDOMAIN=$(az ad signed-in-user show --query 'userPrincipalName' -o tsv | cut -d '@' -f 2 | sed 's/\"//')
+          az ad signed-in-user show
+          # echo $AZURE_TENANTDOMAIN
           
       # - name: Run Azure PowerShell script
       #   uses: azure/powershell@v1
