@@ -22,12 +22,13 @@ jobs:
           creds: ${{ secrets.THOR_AZURE_CREDENTIALS }}
           enable-AzPSSession: $true
 
-      - name: Run Az CLI script
+      - name: Set variables
         run: |
-          ls -la
-          jq --version
-          # az account show
-
+          export AZURE_TENANTID=$(az account show --query tenantId -o tsv)
+          echo $AZURE_TENANTID
+          export AZURE_TENANTDOMAIN=$(az ad signed-in-user show --query 'userPrincipalName' -o tsv | cut -d '@' -f 2 | sed 's/\"//')
+          echo $AZURE_TENANTDOMAIN
+          
       # - name: Run Azure PowerShell script
       #   uses: azure/powershell@v1
       #   with:
