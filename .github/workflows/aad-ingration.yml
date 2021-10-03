@@ -29,14 +29,16 @@ jobs:
           export AZURE_TENANTID=$(az account show --query tenantId -o tsv)                                        
       
       - name: Create users (echo)
-        run: |          
-          AZURE_AKS_USERS=$(cat .github/variables/aad/aksusers.json | jq -c)
-          for row in $(echo "${AZURE_AKS_USERS}" | jq -c '.[]'); do
+        run: |                 
+          OLDIFS=$IFS   
+          IFS=$'\n'
+          for row in $(jq -c '.[]' .github/variables/aad/aksusers.json); do
               _jq() {
                 echo ${row} | jq -r ${1}
               }
             echo $(_jq '.displayName') $(_jq '.userPrincipalName') $(_jq '.description')
           done
+          IFS=$OLDIFS
 
       # - name: Run Azure PowerShell script
       #   uses: azure/powershell@v1
