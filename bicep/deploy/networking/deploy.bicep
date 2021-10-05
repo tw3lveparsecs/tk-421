@@ -215,7 +215,7 @@ module bastionNsg '../../modules/nsgs/main.bicep' = {
   }
 }
 
-module AppGwNsg '../../modules/nsgs/main.bicep' = {
+module appGwNsg '../../modules/nsgs/main.bicep' = {
   name: nsgDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
@@ -293,7 +293,7 @@ module AppGwNsg '../../modules/nsgs/main.bicep' = {
   }
 }
 
-module AksNodesNsg '../../modules/nsgs/main.bicep' = {
+module aksNodesNsg '../../modules/nsgs/main.bicep' = {
   name: nsgDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
@@ -301,7 +301,7 @@ module AksNodesNsg '../../modules/nsgs/main.bicep' = {
   }
 }
 
-module AksIngressNsg '../../modules/nsgs/main.bicep' = {
+module aksIngressNsg '../../modules/nsgs/main.bicep' = {
   name: nsgDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
@@ -333,14 +333,14 @@ var vnetHubSubnets = [
     addressPrefix: '10.20.0.96/27'
     privateEndpointNetworkPolicies: 'disabled'
     privateLinkServiceNetworkPolicies: 'disabled'
-    nsgId: null // add nsg
+    nsgId: bastionNsg.outputs.id
   }
   {
     name: 'AzureWAFSubnet'
     addressPrefix: '10.20.0.128/28'
     privateEndpointNetworkPolicies: 'disabled'
     privateLinkServiceNetworkPolicies: 'disabled'
-    nsgId: null // add nsg
+    nsgId: appGwNsg.outputs.id
   }
 ]
 
@@ -367,7 +367,7 @@ var vnetSpokeSubnets = [
     addressPrefix: '10.24.0.0/22'
     privateEndpointNetworkPolicies: 'disabled'
     privateLinkServiceNetworkPolicies: 'enabled'
-    nsgId: null //add nsg
+    nsgId: aksNodesNsg.outputs.id
     udrId: null //add udr
   }
   {
@@ -375,7 +375,7 @@ var vnetSpokeSubnets = [
     addressPrefix: '10.24.4.0/28'
     privateEndpointNetworkPolicies: 'disabled'
     privateLinkServiceNetworkPolicies: 'disabled'
-    nsgId: null // add nsg
+    nsgId: aksIngressNsg.outputs.id
     udrId: null // add udr  
   }
 ]
