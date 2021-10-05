@@ -57,26 +57,26 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-02-01' = {
       name: subnet.name
       properties: {
         addressPrefix: subnet.addressPrefix
-        delegations: empty(subnet.delegation) ? [] : [
+        delegations: contains(subnet, 'delegation') ? [
           {
             name: '${subnet.name}-delegation'
             properties: {
               serviceName: subnet.delegation
             }
           }
-        ]
-        natGateway: empty(subnet.natGatewayId) ? null : {
+        ] : []
+        natGateway: contains(subnet, 'natGatewayId') ? {
           id: subnet.natGatewayId
-        }
-        networkSecurityGroup: empty(subnet.nsgId) ? null : {
+        } : null
+        networkSecurityGroup: contains(subnet, 'nsgId') ? {
           id: subnet.nsgId
-        }
-        routeTable: empty(subnet.udrId) ? null : {
+        } : null
+        routeTable: contains(subnet, 'udrId') ? {
           id: subnet.udrId
-        }
+        } : null
         privateEndpointNetworkPolicies: subnet.privateEndpointNetworkPolicies
         privateLinkServiceNetworkPolicies: subnet.privateLinkServiceNetworkPolicies
-        serviceEndpoints: empty(subnet.serviceEndpoints) ? null : subnet.serviceEndpoints
+        serviceEndpoints: contains(subnet, 'serviceEndpoints') ? subnet.serviceEndpoints : null
       }
     }]
   }
