@@ -1,21 +1,26 @@
-//  TODO
-//  - update deploy with peerings, udrs
-//  - get working in pipeline
-
 targetScope = 'subscription'
-/*======================================================================
-COMMON VARIABLES
-======================================================================*/
-var location = 'AustraliaEast'
-var primaryLocationCode = 'syd'
-var tags = {
-  project: 'tk-421'
-  environment: 'dev'
-}
+
+@description('Airport location code or alternative short location description')
+param primaryLocationCode string
+
+@description('Deployment environment')
+param env string
+
+@description('Azure resource location')
+param location string
+
+@description('Object containing tags')
+param tags object
+
+@description('Log Analytics Workspace resource id')
+param logAnalyticsWorkspaceId string
+
+@description('Flow logs storage account resource id')
+param flowLogsStorageId string
 /*======================================================================
 RESOURCE GROUPS
 ======================================================================*/
-var networkResourceGroup = 'dev-network-rgp'
+var networkResourceGroup = '${env}-network-rgp'
 
 resource networkRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: networkResourceGroup
@@ -25,7 +30,7 @@ resource networkRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 /*======================================================================
 NEWORK WATCHER
 ======================================================================*/
-var networkWatcherName = 'dev-${primaryLocationCode}-nww'
+var networkWatcherName = '${env}-${primaryLocationCode}-nww'
 
 param nwDeploymentName string = 'networkWatcher${utcNow()}'
 
@@ -40,18 +45,32 @@ module networkWatcher '../../modules/network-watcher/main.bicep' = {
 /*======================================================================
 NSGs
 ======================================================================*/
-var bastionNsgName = 'dev-${primaryLocationCode}-bastion-nsg'
-var AppGwNsgName = 'dev-${primaryLocationCode}-appgw-nsg'
-var AksNodesNsgName = 'dev-${primaryLocationCode}-aksnodes-nsg'
-var AksIngressNsgName = 'dev-${primaryLocationCode}-aksingress-nsg'
+var bastionNsgName = '${env}-${primaryLocationCode}-bastion-nsg'
+var bastionFlowLogName = '${bastionNsgName}-flw'
+var appGwNsgName = '${env}-${primaryLocationCode}-appgw-nsg'
+var appGwFlowLogName = '${appGwNsgName}-flw'
+var aksNodesNsgName = '${env}-${primaryLocationCode}-aksnodes-nsg'
+var aksNodesFlowLogName = '${aksNodesNsgName}-flw'
+var aksIngressNsgName = '${env}-${primaryLocationCode}-aksingress-nsg'
+var aksIngressFlowLogName = '${aksIngressNsgName}-flw'
 
-param nsgDeploymentName string = 'nsg${utcNow()}'
+param bastionNsgDeploymentName string = 'bastionnsg${utcNow()}'
+param bastionFlowDeploymentName string = 'bastionflowlogs${utcNow()}'
+param appGwNsgDeploymentName string = 'appgwnsg${utcNow()}'
+param appGwFlowDeploymentName string = 'appgwflowlogs${utcNow()}'
+param aksNodesNsgDeploymentName string = 'aksnodesnsg${utcNow()}'
+param aksNodesFlowDeploymentName string = 'aksnodesflowlogs${utcNow()}'
+param aksIngressNsgDeploymentName string = 'aksingressnsg${utcNow()}'
+param aksIngressFlowDeploymentName string = 'aksingressflowlogs${utcNow()}'
 
 module bastionNsg '../../modules/nsgs/main.bicep' = {
-  name: nsgDeploymentName
+  name: bastionNsgDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
     nsgName: bastionNsgName
+    enableDiagnostics: true
+    diagnosticStorageAccountId: flowLogsStorageId
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
     securityRules: [
       {
         name: 'AllowWebExperienceInBound'
@@ -215,11 +234,27 @@ module bastionNsg '../../modules/nsgs/main.bicep' = {
   }
 }
 
-module appGwNsg '../../modules/nsgs/main.bicep' = {
-  name: nsgDeploymentName
+module bastionFlowLogs '../../modules/flow-logs/main.bicep' = {
+  name: bastionFlowDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
-    nsgName: AppGwNsgName
+    flowlogName: bastionFlowLogName
+    location: location
+    flowLogStorageAccountId: flowLogsStorageId
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    networkWatcherName: networkWatcher.outputs.name
+    nsgId: bastionNsg.outputs.id
+  }
+}
+
+module appGwNsg '../../modules/nsgs/main.bicep' = {
+  name: appGwNsgDeploymentName
+  scope: resourceGroup(networkRG.name)
+  params: {
+    nsgName: appGwNsgName
+    enableDiagnostics: true
+    diagnosticStorageAccountId: flowLogsStorageId
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
     securityRules: [
       {
         name: 'Allow443InBound'
@@ -293,25 +328,93 @@ module appGwNsg '../../modules/nsgs/main.bicep' = {
   }
 }
 
-module aksNodesNsg '../../modules/nsgs/main.bicep' = {
-  name: nsgDeploymentName
+module appGwFlowLogs '../../modules/flow-logs/main.bicep' = {
+  name: appGwFlowDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
-    nsgName: AksNodesNsgName
+    flowlogName: appGwFlowLogName
+    location: location
+    flowLogStorageAccountId: flowLogsStorageId
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    networkWatcherName: networkWatcher.outputs.name
+    nsgId: appGwNsg.outputs.id
+  }
+}
+
+module aksNodesNsg '../../modules/nsgs/main.bicep' = {
+  name: aksNodesNsgDeploymentName
+  scope: resourceGroup(networkRG.name)
+  params: {
+    nsgName: aksNodesNsgName
+    enableDiagnostics: true
+    diagnosticStorageAccountId: flowLogsStorageId
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+  }
+}
+
+module aksNodesFlowLogs '../../modules/flow-logs/main.bicep' = {
+  name: aksNodesFlowDeploymentName
+  scope: resourceGroup(networkRG.name)
+  params: {
+    flowlogName: aksNodesFlowLogName
+    location: location
+    flowLogStorageAccountId: flowLogsStorageId
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    networkWatcherName: networkWatcher.outputs.name
+    nsgId: aksNodesNsg.outputs.id
   }
 }
 
 module aksIngressNsg '../../modules/nsgs/main.bicep' = {
-  name: nsgDeploymentName
+  name: aksIngressNsgDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
-    nsgName: AksIngressNsgName
+    nsgName: aksIngressNsgName
+    enableDiagnostics: true
+    diagnosticStorageAccountId: flowLogsStorageId
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+  }
+}
+
+module aksIngressFlowLogs '../../modules/flow-logs/main.bicep' = {
+  name: aksIngressFlowDeploymentName
+  scope: resourceGroup(networkRG.name)
+  params: {
+    flowlogName: aksIngressFlowLogName
+    location: location
+    flowLogStorageAccountId: flowLogsStorageId
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    networkWatcherName: networkWatcher.outputs.name
+    nsgId: aksIngressNsg.outputs.id
+  }
+}
+/*======================================================================
+ROUTE TABLES
+======================================================================*/
+var defaultUdrName = '${env}-${primaryLocationCode}-defaultout-udr'
+
+param udrDeploymentName string = 'udr${utcNow()}'
+
+module defaultUdr '../../modules/route-table/main.bicep' = {
+  name: udrDeploymentName
+  scope: resourceGroup(networkRG.name)
+  params: {
+    routeTableName: defaultUdrName
+    routes: [
+      //add route to firwall once provisioned
+      // {
+      //   name: 'to-firewall'
+      //   addressPrefix: '0.0.0.0/0'
+      //   nextHopType: 'VirtualAppliance'
+      //   nextHopIpAddress: '10.0.x.x.' 
+      // }
+    ]
   }
 }
 /*======================================================================
 VIRTUAL NETWORKS
 ======================================================================*/
-var vnetHubName = 'dev-${primaryLocationCode}-hub-vnw'
+var vnetHubName = '${env}-${primaryLocationCode}-hub-vnw'
 var vnetHubAddressSpace = [
   '10.20.0.0/24'
 ]
@@ -343,21 +446,7 @@ var vnetHubSubnets = [
     nsgId: appGwNsg.outputs.id
   }
 ]
-
-param vnetHubDeploymentName string = 'vnetHub${utcNow()}'
-
-module vnetHub '../../modules/vnet/main.bicep' = {
-  name: vnetHubDeploymentName
-  scope: resourceGroup(networkRG.name)
-  params: {
-    vnetName: vnetHubName
-    location: location
-    vnetAddressSpace: vnetHubAddressSpace
-    subnets: vnetHubSubnets
-  }
-}
-
-var vnetSpokeName = 'dev-${primaryLocationCode}-workload1-vnw'
+var vnetSpokeName = '${env}-${primaryLocationCode}-workload1-vnw'
 var vnetSpokeAddressSpace = [
   '10.24.0.0/16'
 ]
@@ -368,7 +457,7 @@ var vnetSpokeSubnets = [
     privateEndpointNetworkPolicies: 'disabled'
     privateLinkServiceNetworkPolicies: 'enabled'
     nsgId: aksNodesNsg.outputs.id
-    udrId: null //add udr
+    udrId: defaultUdr.outputs.id
   }
   {
     name: 'AksIngressServices'
@@ -376,11 +465,25 @@ var vnetSpokeSubnets = [
     privateEndpointNetworkPolicies: 'disabled'
     privateLinkServiceNetworkPolicies: 'disabled'
     nsgId: aksIngressNsg.outputs.id
-    udrId: null // add udr  
+    udrId: defaultUdr.outputs.id
   }
 ]
 
+param vnetHubDeploymentName string = 'vnetHub${utcNow()}'
 param vnetSpokeDeploymentName string = 'vnetSpoke${utcNow()}'
+
+module vnetHub '../../modules/vnet/main.bicep' = {
+  name: vnetHubDeploymentName
+  scope: resourceGroup(networkRG.name)
+  params: {
+    vnetName: vnetHubName
+    location: location
+    vnetAddressSpace: vnetHubAddressSpace
+    subnets: vnetHubSubnets
+    enableDiagnostics: true
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+  }
+}
 
 module vnetSpoke '../../modules/vnet/main.bicep' = {
   name: vnetSpokeDeploymentName
@@ -390,5 +493,40 @@ module vnetSpoke '../../modules/vnet/main.bicep' = {
     location: location
     vnetAddressSpace: vnetSpokeAddressSpace
     subnets: vnetSpokeSubnets
+    enableDiagnostics: true
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+  }
+}
+/*======================================================================
+VIRTUAL NETWORK PEERINGS
+======================================================================*/
+param hubPeerDeploymentName string = 'hubpeer${utcNow()}'
+param spokePeerDeploymentName string = 'spokepeer${utcNow()}'
+
+module hubPeering '../../modules/vnet-peering/main.bicep' = {
+  name: hubPeerDeploymentName
+  scope: resourceGroup(networkRG.name)
+  params: {
+    vnetName: vnetHub.outputs.name
+    peerName: toLower('${vnetHub.outputs.name}-to-${vnetSpoke.outputs.name}')
+    allowForwardedTraffic: false
+    allowGatewayTransit: false
+    allowVirtualNetworkAccess: true
+    useRemoteGateways: false
+    remoteVirtualNetworkId: vnetSpoke.outputs.id
+  }
+}
+
+module spokePeering '../../modules/vnet-peering/main.bicep' = {
+  name: spokePeerDeploymentName
+  scope: resourceGroup(networkRG.name)
+  params: {
+    vnetName: vnetSpoke.outputs.name
+    peerName: toLower('${vnetSpoke.outputs.name}-to-${vnetHub.outputs.name}')
+    allowForwardedTraffic: false
+    allowGatewayTransit: false
+    allowVirtualNetworkAccess: true
+    useRemoteGateways: false
+    remoteVirtualNetworkId: vnetHub.outputs.id
   }
 }
