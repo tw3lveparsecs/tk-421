@@ -4,14 +4,14 @@ on:
   pull_request:
     branches:
     - feature/networking
-    paths:
-    - bicep/deploy/foundations/*  
+    # paths:
+    # - bicep/deploy/foundations/*  
   push:
     branches:
     - feature/networking
-    paths:
-    - bicep/deploy/networking/*
-    - bicep/deploy/management/* 
+    # paths:
+    # - bicep/deploy/networking/*
+    # - bicep/deploy/management/* 
 
 env:
   bicep-file-path: ./bicep/deploy/foundations/*
