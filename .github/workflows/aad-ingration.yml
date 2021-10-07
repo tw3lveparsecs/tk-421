@@ -26,7 +26,9 @@ jobs:
         run: |
           AZURE_TOKEN=$(az account get-access-token --resource-type ms-graph --query accessToken --output tsv)
           export AZURE_TENANTDOMAIN=$(curl -s --header "Authorization: Bearer ${AZURE_TOKEN}" --request GET 'https://graph.microsoft.com/v1.0/domains' | jq -r '.value[] | select(.isDefault == true) | {id}[]')
+          echo "::set-env name=AZURE_TENANTDOMAIN::$AZURE_TENANTDOMAIN"
           export AZURE_TENANTID=$(az account show --query tenantId -o tsv)                                        
+          echo "::set-env name=AZURE_TENANTID::$AZURE_TENANTID"
       
       - name: Create aks groups
         run: |                 
