@@ -36,8 +36,8 @@ jobs:
               _jq() {
                 echo ${row} | jq -r ${1}
               }
-            echo az ad group create --display-name "$(_jq '.displayName')" --mail-nickname "$(_jq '.userPrincipalName')" --description "$(_jq '.description')" --query objectId -o tsv
-            echo $(_jq '.displayName') $(_jq '.userPrincipalName') $(_jq '.description')
+            az ad group create --display-name "$(_jq '.displayName')" --mail-nickname "$(_jq '.userPrincipalName')" --description "$(_jq '.description')" --query objectId -o tsv
+            # echo $(_jq '.displayName') $(_jq '.userPrincipalName') $(_jq '.description')
           done
           IFS=$OLDIFS
 
