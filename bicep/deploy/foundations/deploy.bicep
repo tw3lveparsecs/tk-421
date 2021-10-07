@@ -1,6 +1,3 @@
-//  TODO
-//  - get working in pipeline
-
 targetScope = 'subscription'
 /*======================================================================
 COMMON VARIABLES
