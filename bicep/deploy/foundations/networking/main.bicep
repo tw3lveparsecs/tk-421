@@ -34,7 +34,7 @@ var networkWatcherName = '${env}-${primaryLocationCode}-nww'
 
 param nwDeploymentName string = 'networkWatcher${utcNow()}'
 
-module networkWatcher '../../modules/network-watcher/main.bicep' = {
+module networkWatcher '../../../modules/networking/network-watcher/main.bicep' = {
   name: nwDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
@@ -63,7 +63,7 @@ param aksNodesFlowDeploymentName string = 'aksnodesflowlogs${utcNow()}'
 param aksIngressNsgDeploymentName string = 'aksingressnsg${utcNow()}'
 param aksIngressFlowDeploymentName string = 'aksingressflowlogs${utcNow()}'
 
-module bastionNsg '../../modules/nsgs/main.bicep' = {
+module bastionNsg '../../../modules/networking/nsgs/main.bicep' = {
   name: bastionNsgDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
@@ -234,7 +234,7 @@ module bastionNsg '../../modules/nsgs/main.bicep' = {
   }
 }
 
-module bastionFlowLogs '../../modules/flow-logs/main.bicep' = {
+module bastionFlowLogs '../../../modules/networking/flow-logs/main.bicep' = {
   name: bastionFlowDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
@@ -247,7 +247,7 @@ module bastionFlowLogs '../../modules/flow-logs/main.bicep' = {
   }
 }
 
-module appGwNsg '../../modules/nsgs/main.bicep' = {
+module appGwNsg '../../../modules/networking/nsgs/main.bicep' = {
   name: appGwNsgDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
@@ -328,7 +328,7 @@ module appGwNsg '../../modules/nsgs/main.bicep' = {
   }
 }
 
-module appGwFlowLogs '../../modules/flow-logs/main.bicep' = {
+module appGwFlowLogs '../../../modules/networking/flow-logs/main.bicep' = {
   name: appGwFlowDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
@@ -341,7 +341,7 @@ module appGwFlowLogs '../../modules/flow-logs/main.bicep' = {
   }
 }
 
-module aksNodesNsg '../../modules/nsgs/main.bicep' = {
+module aksNodesNsg '../../../modules/networking/nsgs/main.bicep' = {
   name: aksNodesNsgDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
@@ -352,7 +352,7 @@ module aksNodesNsg '../../modules/nsgs/main.bicep' = {
   }
 }
 
-module aksNodesFlowLogs '../../modules/flow-logs/main.bicep' = {
+module aksNodesFlowLogs '../../../modules/networking/flow-logs/main.bicep' = {
   name: aksNodesFlowDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
@@ -365,7 +365,7 @@ module aksNodesFlowLogs '../../modules/flow-logs/main.bicep' = {
   }
 }
 
-module aksIngressNsg '../../modules/nsgs/main.bicep' = {
+module aksIngressNsg '../../../modules/networking/nsgs/main.bicep' = {
   name: aksIngressNsgDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
@@ -376,7 +376,7 @@ module aksIngressNsg '../../modules/nsgs/main.bicep' = {
   }
 }
 
-module aksIngressFlowLogs '../../modules/flow-logs/main.bicep' = {
+module aksIngressFlowLogs '../../../modules/networking/flow-logs/main.bicep' = {
   name: aksIngressFlowDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
@@ -395,7 +395,7 @@ var defaultUdrName = '${env}-${primaryLocationCode}-defaultout-udr'
 
 param udrDeploymentName string = 'udr${utcNow()}'
 
-module defaultUdr '../../modules/route-table/main.bicep' = {
+module defaultUdr '../../../modules/networking/route-table/main.bicep' = {
   name: udrDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
@@ -472,7 +472,7 @@ var vnetSpokeSubnets = [
 param vnetHubDeploymentName string = 'vnetHub${utcNow()}'
 param vnetSpokeDeploymentName string = 'vnetSpoke${utcNow()}'
 
-module vnetHub '../../modules/vnet/main.bicep' = {
+module vnetHub '../../../modules/networking/vnet/main.bicep' = {
   name: vnetHubDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
@@ -485,7 +485,7 @@ module vnetHub '../../modules/vnet/main.bicep' = {
   }
 }
 
-module vnetSpoke '../../modules/vnet/main.bicep' = {
+module vnetSpoke '../../../modules/networking/vnet/main.bicep' = {
   name: vnetSpokeDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
@@ -503,7 +503,7 @@ VIRTUAL NETWORK PEERINGS
 param hubPeerDeploymentName string = 'hubpeer${utcNow()}'
 param spokePeerDeploymentName string = 'spokepeer${utcNow()}'
 
-module hubPeering '../../modules/vnet-peering/main.bicep' = {
+module hubPeering '../../../modules/networking/vnet-peering/main.bicep' = {
   name: hubPeerDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
@@ -517,7 +517,7 @@ module hubPeering '../../modules/vnet-peering/main.bicep' = {
   }
 }
 
-module spokePeering '../../modules/vnet-peering/main.bicep' = {
+module spokePeering '../../../modules/networking/vnet-peering/main.bicep' = {
   name: spokePeerDeploymentName
   scope: resourceGroup(networkRG.name)
   params: {
