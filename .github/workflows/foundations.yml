@@ -15,7 +15,9 @@ on:
 
 env:
   bicep-file-path: ./bicep/deploy/foundations/*
-  module-dir: ./bicep/modules/networking/* ./bicep/modules/management/*  
+  module-dir:
+    - ./bicep/modules/networking/*
+    - ./bicep/modules/management/*  
 
 jobs:
   build: 
@@ -25,7 +27,7 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
-        
+
       - name: Build Bicep Code
         uses: ./.github/actions/build
         with:
