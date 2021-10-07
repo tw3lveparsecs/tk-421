@@ -1,12 +1,12 @@
 [
     {
-        "display-name": "aks-cluster-admins-cluster1",
-        "mail-nickname": "aks-cluster-admins-cluster1",
+        "displayname": "aks-cluster-admins-cluster1",
+        "mailnickname": "aks-cluster-admins-cluster1",
         "description": "Principals in this group are cluster admins in cluster 1."
     },
     {
-        "display-name": "aks-cluster-admins-cluster2",
-        "mail-nickname": "aks-cluster-admins-cluster2",
+        "displayname": "aks-cluster-admins-cluster2",
+        "mailnickname": "aks-cluster-admins-cluster2",
         "description": "Principals in this group are cluster admins in cluster 2."
     }
 ]
