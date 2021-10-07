@@ -1,0 +1,34 @@
+name: 'Build Bicep Code'
+description: 'Builds and produces artifacts to be used for bicep deployments.'
+inputs:
+  actions-path:
+    description: 'Directory or file path to actions.'
+    required: false
+    default: ./.github/actions/*
+  variable-path:
+    description: 'Directory or file path to variables.'
+    required: false
+    default: ./.github/variables/*
+  module-dir:
+    description: 'Directory or file path to bicep modules.'
+    required: true
+  bicep-file-path:
+    description: 'File path to Bicep template to deploy.'
+    required: true    
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v2
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: drop
+        path: |          # array support
+          ${{ inputs.variable-path }} 
+          ${{ inputs.bicep-file-path }} 
+          ${{ inputs.module-dir }} 
+          ${{ inputs.actions-path }} 
+        if-no-files-found: error

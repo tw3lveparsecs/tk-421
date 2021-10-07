@@ -1,0 +1,48 @@
+name: Foundations
+on:
+  workflow_dispatch:
+  # pull_request:
+  #   branches:
+  #   - main
+  #   paths:
+  #   - bicep/deploy/networking/*
+  #   - bicep/deploy/management/*  
+  # push:
+  #   branches:
+  #   - main
+  #   paths:
+  #   - bicep/deploy/networking/*
+  #   - bicep/deploy/management/* 
+
+env:
+  bicep-file-path: ./bicep/deploy/foundations/*
+  module-dir: 
+    - ./bicep/modules/networking/*
+    - ./bicep/modules/management/*  
+
+jobs:
+  build: 
+    # if: ${{ contains(github.ref, 'refs/pull/') }} 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build Bicep Code
+        uses: ./.github/actions/build
+        with:
+          module-dir: ${{ env.module-dir }}
+          bicep-file-path: ${{ env.bicep-file-path }}
+
+  # deploy:
+  #   if: ${{ github.ref == 'refs/heads/main' }}  
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout Repo
+  #       uses: actions/checkout@v2
+
+  #     - name: Set Environment Variables
+  #       uses: tw3lveparsecs/github-actions-set-variables@v0.1
+
+  #     - name: Deploy Bicep Code
+  #       uses: ./.github/actions/deploy
+  #       with:
+  #         azure-credentials: ${{ secrets[env.AZURE_CREDENTIALS] }}
+  #         bicep-file-path: ${{ env.file-path }}
