@@ -13,11 +13,9 @@ on:
     - bicep/deploy/networking/*
     - bicep/deploy/management/* 
 
-# env:
-#   bicep-file-path: ./bicep/deploy/foundations/*
-#   module-dir: 
-#     - ./bicep/modules/networking/*
-#     - ./bicep/modules/management/*  
+env:
+  bicep-file-path: ./bicep/deploy/foundations/*
+  module-dir: ./bicep/modules/networking/* ./bicep/modules/management/*  
 
 jobs:
   build: 
