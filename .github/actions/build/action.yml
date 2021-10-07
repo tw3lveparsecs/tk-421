@@ -19,9 +19,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout Repo
-      uses: actions/checkout@v2
-
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v2
       with:
