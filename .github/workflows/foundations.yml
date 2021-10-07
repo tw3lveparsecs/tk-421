@@ -21,7 +21,8 @@ env:
 
 jobs:
   build: 
-    # if: ${{ contains(github.ref, 'refs/pull/') }} 
+    # if: ${{ contains(github.ref, 'refs/pull/') }}
+    if: ${{ github.ref == 'refs/heads/feature/networking' }}   
     runs-on: ubuntu-latest
     steps:
       - name: Build Bicep Code
