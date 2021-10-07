@@ -6,10 +6,10 @@ on:
   #   - feature/networking
   #   paths:
   #   - bicep/deploy/foundations/*  
-  # push:
-  #   branches:
-  #   - feature/networking
-  #   paths:
+  push:
+    branches:
+    - feature/networking
+    paths:
   #   - bicep/deploy/networking/*
   #   - bicep/deploy/management/* 
 
@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build Bicep Code
-        uses: ./.github/actions/build
+        uses: /.github/actions/build
         with:
           module-dir: ${{ env.module-dir }}
           bicep-file-path: ${{ env.bicep-file-path }}
