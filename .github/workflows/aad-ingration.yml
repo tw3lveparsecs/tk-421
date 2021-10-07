@@ -56,7 +56,7 @@ jobs:
               echo "az clie"
               OBJECTID=$(az ad user create --display-name "$(_jq '.displayname')" --user-principal-name "$(_jq '.userprincipalname')@${{ env.AZURE_TENANTDOMAIN }}" --force-change-password-next-login --password ${PW} --query objectId -o tsv)
               echo "jq"
-              echo "{ \"displayName\": \"$(_jq '.displayname')\", \"objectId\": "${OBJECTID}", \"secret\": \"${PW}\" }" | jq
+              echo "{ \"displayName\": \"$(_jq '.displayname')\", \"objectId\": "${OBJECTID}", \"secret\": \"${PW}\" }"
               echo "\n" 
           done
           IFS=$OLDIFS
