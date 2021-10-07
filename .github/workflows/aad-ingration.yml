@@ -27,8 +27,9 @@ jobs:
           AZURE_TOKEN=$(az account get-access-token --resource-type ms-graph --query accessToken --output tsv)
           export AZURE_TENANTDOMAIN=$(curl -s --header "Authorization: Bearer ${AZURE_TOKEN}" --request GET 'https://graph.microsoft.com/v1.0/domains' | jq -r '.value[] | select(.isDefault == true) | {id}[]')
           echo "::set-env name=AZURE_TENANTDOMAIN::$AZURE_TENANTDOMAIN"
+          echo "AZURE_TENANTDOMAIN=${AZURE_TENANTDOMAIN}" >> $GITHUB_ENV
           export AZURE_TENANTID=$(az account show --query tenantId -o tsv)                                        
-          echo "::set-env name=AZURE_TENANTID::$AZURE_TENANTID"
+          echo "AZURE_TENANTID=${AZURE_TENANTID}" >> $GITHUB_ENV
       
       - name: Create aks groups
         run: |                 
@@ -51,9 +52,9 @@ jobs:
               _jq() {
                 echo ${row} | jq -r ${1}
               }
-              echo "$(_jq '.userprincipalname')@${AZURE_TENANTDOMAIN}"               
+              echo "$(_jq '.userprincipalname')@${{ env.AZURE_TENANTDOMAIN }}"               
               PW=$(date +%s | md5sum | base64 | head -c 32 ; echo)
-              OBJECTID=$(az ad user create --display-name "$(_jq '.displayname')" --user-principal-name "$(_jq '.userprincipalname')@${AZURE_TENANTDOMAIN}" --force-change-password-next-login --password ${PW} --query objectId -o tsv)
+              OBJECTID=$(az ad user create --display-name "$(_jq '.displayname')" --user-principal-name "$(_jq '.userprincipalname')@${{ env.AZURE_TENANTDOMAIN }}" --force-change-password-next-login --password ${PW} --query objectId -o tsv)
               echo "{ \"displayName\": \"$(_jq '.displayname')\", \"objectId\": "${OBJECTID}", \"secret\": \"${PW}\" }" | jq
               echo "\n" 
           done
