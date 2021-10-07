@@ -20,7 +20,7 @@ jobs:
         uses: Azure/login@v1
         with:
           creds: ${{ secrets.THOR_AZURE_CREDENTIALS }}
-          enable-AzPSSession: $true
+          enable-AzPSSession: $false
 
       - name: Set variables
         run: |
@@ -28,23 +28,30 @@ jobs:
           export AZURE_TENANTDOMAIN=$(curl -s --header "Authorization: Bearer ${AZURE_TOKEN}" --request GET 'https://graph.microsoft.com/v1.0/domains' | jq -r '.value[] | select(.isDefault == true) | {id}[]')
           export AZURE_TENANTID=$(az account show --query tenantId -o tsv)                                        
       
-      - name: Create users (echo)
+      - name: Create aks groups
+        run: |                 
+          OLDIFS=$IFS   
+          IFS=$'\n'
+          for row in $(jq -c '.[]' .github/variables/aad/aksgroups.json); do
+              _jq() {
+                echo ${row} | jq -r ${1}
+              }
+              echo Creating group "$(_jq '.display-name')"
+              az ad group create --display-name "$(_jq '.display-name')" --mail-nickname "$(_jq '.mail-nickname')" --description "$(_jq '.description')" --query objectId -o tsv            
+          done
+          IFS=$OLDIFS
+
+      - name: Create aks users
         run: |                 
           OLDIFS=$IFS   
           IFS=$'\n'
           for row in $(jq -c '.[]' .github/variables/aad/aksusers.json); do
               _jq() {
                 echo ${row} | jq -r ${1}
-              }
-            az ad group create --display-name "$(_jq '.displayName')" --mail-nickname "$(_jq '.userPrincipalName')" --description "$(_jq '.description')" --query objectId -o tsv
-            # echo $(_jq '.displayName') $(_jq '.userPrincipalName') $(_jq '.description')
+              }              
+              PW=$(date +%s | md5sum | base64 | head -c 32 ; echo)
+              OBJECTID=$(az ad user create --display-name "$(_jq '.display-name')" --user-principal-name $(_jq '.user-principal-name')@${AZURE_TENANTDOMAIN} --force-change-password-next-login --password ${PW} --query objectId -o tsv)
+              echo "{ \"displayName\": \"$(_jq '.display-name')\", \"objectId\": "${OBJECTID}", \"secret\": \"${PW}\" }" | jq
+              echo "\n" 
           done
           IFS=$OLDIFS
-
-
-      # - name: Run Azure PowerShell script
-      #   uses: azure/powershell@v1
-      #   with:
-      #     azPSVersion: 'latest'
-      #     inlineScript: |
-      #       Get-AzContext
