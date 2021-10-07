@@ -15,7 +15,7 @@ on:
 
 env:
   bicep-file-path: ./bicep/deploy/foundations/*
-  module-dir: ./bicep/modules/networking/*\n./bicep/modules/management/*  
+  module-dir: [./bicep/modules/networking/* \n ./bicep/modules/management/*]
 
 jobs:
   build: 
