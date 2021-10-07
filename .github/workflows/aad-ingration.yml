@@ -52,11 +52,10 @@ jobs:
                 echo ${row} | jq -r ${1}
               }
               echo "$(_jq '.userprincipalname')@${{ env.AZURE_TENANTDOMAIN }}"               
-              PW=$(date +%s | md5sum | base64 | head -c 32 ; echo)
-              echo "az clie"
+              PW=$(date +%s | md5sum | base64 | head -c 32 ; echo)              
               OBJECTID=$(az ad user create --display-name "$(_jq '.displayname')" --user-principal-name "$(_jq '.userprincipalname')@${{ env.AZURE_TENANTDOMAIN }}" --force-change-password-next-login --password ${PW} --query objectId -o tsv)
-              echo "jq"
-              echo "{ \"displayName\": \"$(_jq '.displayname')\", \"objectId\": "${OBJECTID}", \"secret\": \"${PW}\" }"
-              echo "\n" 
+              DISPLAYNAME=$(_jq '.displayname')
+              echo "{ \"displayName\": \"${DISPLAYNAME}\", \"objectId\": "${OBJECTID}", \"secret\": \"${PW}\" }" | jq -r
+              echo "" 
           done
           IFS=$OLDIFS
