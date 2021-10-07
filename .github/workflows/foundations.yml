@@ -1,17 +1,17 @@
 name: Foundations
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-    - feature/networking
-    # paths:
-    # - bicep/deploy/foundations/*  
-  push:
-    branches:
-    - feature/networking
-    # paths:
-    # - bicep/deploy/networking/*
-    # - bicep/deploy/management/* 
+  # pull_request:
+  #   branches:
+  #   - feature/networking
+  #   paths:
+  #   - bicep/deploy/foundations/*  
+  # push:
+  #   branches:
+  #   - feature/networking
+  #   paths:
+  #   - bicep/deploy/networking/*
+  #   - bicep/deploy/management/* 
 
 env:
   bicep-file-path: ./bicep/deploy/foundations/*
