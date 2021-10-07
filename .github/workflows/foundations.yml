@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build Bicep Code
-        uses: /.github/actions/build
+        uses: .github/actions/build
         with:
           module-dir: ${{ env.module-dir }}
           bicep-file-path: ${{ env.bicep-file-path }}
