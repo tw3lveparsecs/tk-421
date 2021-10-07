@@ -36,7 +36,7 @@ jobs:
               _jq() {
                 echo ${row} | jq -r ${1}
               }
-              echo Creating group "$(_jq '.display-name')"
+              echo Creating group "$(_jq '.displayname')"
               az ad group create --display-name "$(_jq '.displayname')" --mail-nickname "$(_jq '.mailnickname')" --description "$(_jq '.description')" --query objectId -o tsv            
           done
           IFS=$OLDIFS
@@ -48,9 +48,10 @@ jobs:
           for row in $(jq -c '.[]' .github/variables/aad/aksusers.json); do
               _jq() {
                 echo ${row} | jq -r ${1}
-              }              
+              }
+              echo "$(_jq '.userprincipalname')@${AZURE_TENANTDOMAIN}"               
               PW=$(date +%s | md5sum | base64 | head -c 32 ; echo)
-              OBJECTID=$(az ad user create --display-name "$(_jq '.displayname')" --user-principal-name $(_jq '.userprincipalname')@${AZURE_TENANTDOMAIN} --force-change-password-next-login --password ${PW} --query objectId -o tsv)
+              OBJECTID=$(az ad user create --display-name "$(_jq '.displayname')" --user-principal-name "$(_jq '.userprincipalname')@${AZURE_TENANTDOMAIN}" --force-change-password-next-login --password ${PW} --query objectId -o tsv)
               echo "{ \"displayName\": \"$(_jq '.displayname')\", \"objectId\": "${OBJECTID}", \"secret\": \"${PW}\" }" | jq
               echo "\n" 
           done
