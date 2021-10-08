@@ -18,11 +18,15 @@ inputs:
   workflow-name:
     description: 'Name of the workflow to download artifacts from.'
     required: true
-    default: ${GITHUB_WORKFLOW}.yml  
+    #default: ${GITHUB_WORKFLOW}.yml  
 
 runs:
   using: "composite"
   steps:
+    - name: test
+      run: |
+        echo ${{ inputs.workflow-name }}
+        
     - name: Download workflow artifact
       uses: dawidd6/action-download-artifact@v2.14.1
       with:
