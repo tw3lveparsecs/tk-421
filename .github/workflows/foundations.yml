@@ -34,18 +34,19 @@ jobs:
           module-dir: ${{ env.module-dir }}
           bicep-file-path: ${{ env.bicep-file-path }}
 
-  # deploy:
-  #   if: ${{ github.ref == 'refs/heads/main' }}  
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Repo
-  #       uses: actions/checkout@v2
+  deploy:
+    if: ${{ github.ref == 'refs/heads/main' }}  
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
 
-  #     - name: Set Environment Variables
-  #       uses: tw3lveparsecs/github-actions-set-variables@v0.1
+      - name: Set Environment Variables
+        uses: tw3lveparsecs/github-actions-set-variables@v0.1
 
-  #     - name: Deploy Bicep Code
-  #       uses: ./.github/actions/deploy
-  #       with:
-  #         azure-credentials: ${{ secrets[env.AZURE_CREDENTIALS] }}
-  #         bicep-file-path: ${{ env.file-path }}
+      - name: Deploy Bicep Code
+        uses: ./.github/actions/deploy
+        with:
+          azure-credentials: ${{ secrets[env.AZURE_CREDENTIALS] }}
+          bicep-file-path: ${{ env.bicep-file-path }}
+          # workflow-name: GITHUB_WORKFLOW

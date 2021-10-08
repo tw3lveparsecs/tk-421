@@ -17,7 +17,8 @@ inputs:
     required: true    
   workflow-name:
     description: 'Name of the workflow to download artifacts from.'
-    required: true    
+    required: true
+    default: GITHUB_WORKFLOW    
 
 runs:
   using: "composite"
