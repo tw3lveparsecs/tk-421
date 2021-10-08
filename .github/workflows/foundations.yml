@@ -14,8 +14,8 @@ on:
   #   - bicep/deploy/management/* 
 
 env:
-  workflow-file-name: foundations.yml
-  bicep-file-path: ./bicep/deploy/foundations/*
+  workflow-file-name: foundations.yml  
+  bicep-dir: ./bicep/deploy/foundations/*
   module-dir: |
     ./bicep/modules/networking/*
     ./bicep/modules/management/*  
@@ -51,5 +51,5 @@ jobs:
         uses: ./.github/actions/deploy
         with:
           azure-credentials: ${{ secrets[env.AZURE_CREDENTIALS] }}
-          bicep-file-path: ${{ env.bicep-file-path }}
+          bicep-dir: ${{ env.bicep-dir }}
           workflow-file-name: ${{ env.workflow-file-name }}
