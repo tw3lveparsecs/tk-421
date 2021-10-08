@@ -19,6 +19,7 @@ runs:
     - name: Build Bicep to ARM
       run: |
         az bicep build --file $FILE --outfile $RUNNER_TEMP/azuredeploy.json
+      shell: bash
       env:
         FILE: ${{ inputs.bicep-file-path }}
 
