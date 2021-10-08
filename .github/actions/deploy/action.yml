@@ -62,5 +62,5 @@ runs:
           az deployment sub create \
             --template-file ./${{ env.deployfile }} \
             --location ${{ env.LOCATION }}
-        env:
-          ARTIFACT_NAME: ${{ inputs.artifact-name}}
+      env:
+        ARTIFACT_NAME: ${{ inputs.artifact-name}}
