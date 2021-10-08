@@ -29,6 +29,6 @@ runs:
         name: drop
         path: |
           ${{ inputs.variable-path }}           
-          ${{ inputs.actions-path }}                     
+          ${{ inputs.actions-path }}           
+          azuredeploy.json
         if-no-files-found: error
-        #${{ runner.temp }}/azuredeploy.json
