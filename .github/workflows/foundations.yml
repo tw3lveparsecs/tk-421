@@ -1,17 +1,17 @@
 name: Foundations
 on:
   workflow_dispatch:
-  # pull_request:
-  #   branches:
-  #   - feature/networking
-  #   paths:
-  #   - bicep/deploy/foundations/*  
+  pull_request:
+    branches:
+    - feature/networking
+    paths:
+    - bicep/deploy/foundations/*  
   push:
     branches:
     - feature/networking
     paths:
-  #   - bicep/deploy/networking/*
-  #   - bicep/deploy/management/* 
+    - bicep/deploy/networking/*
+    - bicep/deploy/management/* 
 
 env:
   workflow-file-name: foundations.yml  
@@ -20,7 +20,7 @@ env:
 jobs:
   build: 
     # if: ${{ contains(github.ref, 'refs/pull/') }}
-    if: ${{ github.ref == 'refs/heads/feature/networking' }}   
+    if: ${{ github.ref == 'refs/heads/develop' }}        
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -32,8 +32,7 @@ jobs:
           bicep-file-path: ${{ env.bicep-file-path }}
 
   deploy:
-    # if: ${{ github.ref == 'refs/heads/main' }}  
-    if: ${{ github.ref == 'refs/heads/feature/networking' }} 
+    if: ${{ github.ref == 'refs/heads/develop' }}      
     needs: build
     runs-on: ubuntu-latest
     steps:
