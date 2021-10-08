@@ -45,8 +45,8 @@ runs:
       run: |
         $string=$BICEP_DIR$BICEP_DEPLOY-NAME
         echo $string
-        filepath="${string//'*'/}"
-        echo $filepath
+        #filepath="${string//'*'/}"
+        #echo $filepath
         #echo "deployfile=$filepath" >> $GITHUB_ENV
       shell: bash
       env:
