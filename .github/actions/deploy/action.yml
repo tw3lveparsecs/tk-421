@@ -15,19 +15,13 @@ inputs:
   bicep-file-path:
     description: 'File path to Bicep template to deploy.'
     required: true    
-  workflow-name:
-    description: 'Name of the workflow to download artifacts from.'
-    required: true
-    #default: ${GITHUB_WORKFLOW}.yml  
+  workflow-file-name:
+    description: 'File name of the workflow to download artifacts from.'
+    required: true    
 
 runs:
   using: "composite"
   steps:
-    - name: test
-      run: |
-        echo ${{ inputs.workflow-name }}
-      shell: bash
-
     - name: Download workflow artifact
       uses: dawidd6/action-download-artifact@v2.14.1
       with:
