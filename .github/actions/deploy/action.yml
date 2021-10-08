@@ -42,13 +42,12 @@ runs:
     #     creds: ${{ inputs.azure-credentials }}
     
     - name: Get Bicep deployment file
-      run: |        
-        echo ${BICEP_DIR}${BICEP_DEPLOY_NAME}
-        #$string=$BICEP_DIR$BICEP_DEPLOY_NAME
-        #echo $string
-        #filepath="${string//'*'/}"
-        #echo $filepath
-        #echo "deployfile=$filepath" >> $GITHUB_ENV
+      run: |                
+        string=${BICEP_DIR}${BICEP_DEPLOY_NAME}
+        echo $string
+        filepath="${string//'*'/}"
+        echo $filepath
+        echo "deployfile=$filepath" >> $GITHUB_ENV
       shell: bash
       env:
         BICEP_DIR: ${{ inputs.bicep-dir }}
