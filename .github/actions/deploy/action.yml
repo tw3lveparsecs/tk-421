@@ -43,8 +43,9 @@ runs:
     
     - name: Get Bicep deployment file
       run: |        
-        $string=$BICEP_DIR$BICEP_DEPLOY_NAME
-        echo $string
+        echo $BICEP_DIR
+        #$string=$BICEP_DIR$BICEP_DEPLOY_NAME
+        #echo $string
         #filepath="${string//'*'/}"
         #echo $filepath
         #echo "deployfile=$filepath" >> $GITHUB_ENV
