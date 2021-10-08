@@ -43,7 +43,7 @@ runs:
     
     - name: Get Bicep deployment file
       run: |        
-        echo $BICEP_DEPLOY_NAME
+        echo ${BICEP_DIR}${BICEP_DEPLOY_NAME}
         #$string=$BICEP_DIR$BICEP_DEPLOY_NAME
         #echo $string
         #filepath="${string//'*'/}"
