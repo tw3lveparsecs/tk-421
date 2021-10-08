@@ -24,7 +24,7 @@ runs:
         FILE: ${{ inputs.bicep-file-path }}
 
     - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v2.2.4
       with:
         name: drop
         path: |
