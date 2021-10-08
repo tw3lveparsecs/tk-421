@@ -23,7 +23,7 @@ runs:
       uses: actions/upload-artifact@v2
       with:
         name: drop
-        path: |          # array support
+        path: |
           ${{ inputs.variable-path }} 
           ${{ inputs.bicep-file-path }} 
           ${{ inputs.module-dir }} 
