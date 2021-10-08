@@ -25,7 +25,7 @@ runs:
     - name: Download workflow artifact
       uses: dawidd6/action-download-artifact@v2.14.1
       with:
-        workflow: ${{ inputs.workflow-name }}
+        workflow: ${{ inputs.workflow-file-name }}
 
     - name: Set Environment Variables
       uses: tw3lveparsecs/github-actions-set-variables@v0.1
