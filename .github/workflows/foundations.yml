@@ -51,4 +51,4 @@ jobs:
         with:
           azure-credentials: ${{ secrets[env.AZURE_CREDENTIALS] }}
           bicep-file-path: ${{ env.bicep-file-path }}
-          # workflow-name: GITHUB_WORKFLOW
+          workflow-name: $GITHUB_WORKFLOW
