@@ -49,10 +49,10 @@ runs:
         echo "deployfile=$filepath" >> $GITHUB_ENV
       shell: bash
  
-    - name: Deploy Bicep (Subscription Level)
-      uses: Azure/cli@1.0.4
-      with:
-        inlineScript: |
-          az deployment sub create \
-            --template-file ./drop/${{ env.deployfile }} \
-            --location ${{ env.LOCATION }}
+    # - name: Deploy Bicep (Subscription Level)
+    #   uses: Azure/cli@1.0.4
+    #   with:
+    #     inlineScript: |
+    #       az deployment sub create \
+    #         --template-file ./drop/${{ env.deployfile }} \
+    #         --location ${{ env.LOCATION }}
