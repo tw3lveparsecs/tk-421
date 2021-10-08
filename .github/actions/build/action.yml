@@ -27,8 +27,6 @@ runs:
       uses: actions/upload-artifact@v2
       with:
         name: drop
-        path: |
-          $ARTIFACT
+        path: ${{ runner.temp }}/azuredeploy.json  
+          
         if-no-files-found: error
-      env:
-        ARTIFACT: $RUNNER_TEMP/azuredeploy.json
