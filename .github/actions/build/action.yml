@@ -18,7 +18,7 @@ runs:
   steps:
     - name: Build Bicep to ARM
       run: |
-        az bicep build --file $FILE --outdir $RUNNER_TEMP
+        az bicep build --file $FILE --outdir $RUNNER_TEMP --outfile azuredeploy.json
         ls $RUNNER_TEMP
       shell: bash
       env:
