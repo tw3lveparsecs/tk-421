@@ -9,9 +9,6 @@ inputs:
     description: 'Directory or file path to variables.'
     required: false
     default: ./.github/variables/*
-  module-dir:
-    description: 'Directory or file path to bicep modules.'
-    required: true
   bicep-file-path:
     description: 'File path to Bicep template to deploy.'
     required: true    
@@ -19,13 +16,16 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Build Bicep to ARM
+      run: |
+        az bicep build --file $FILE --outfile $RUNNER_TEMP/azuredeploy.json
+      env:
+        FILE: ${{ inputs.bicep-file-path }}
+
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v2
       with:
         name: drop
         path: |
-          ${{ inputs.variable-path }} 
-          ${{ inputs.bicep-file-path }} 
-          ${{ inputs.module-dir }} 
-          ${{ inputs.actions-path }} 
+          $RUNNER_TEMP/azuredeploy.json
         if-no-files-found: error
