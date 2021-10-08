@@ -45,7 +45,7 @@ runs:
       run: |                
         string=${BICEP_DIR}${BICEP_DEPLOY_NAME}        
         filepath="${string//'*'/}"
-        templatefile="drop${filepath//'./'/}"
+        templatefile="drop/${filepath//'./'/}"
         echo $templatefile
         echo "deployfile=$templatefile" >> $GITHUB_ENV
       shell: bash
@@ -58,5 +58,5 @@ runs:
       with:
         inlineScript: |
           az deployment sub create \
-            --template-file ./drop/${{ env.deployfile }} \
+            --template-file ./${{ env.deployfile }} \
             --location ${{ env.LOCATION }}
