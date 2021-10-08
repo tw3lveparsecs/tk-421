@@ -35,7 +35,8 @@ jobs:
           bicep-file-path: ${{ env.bicep-file-path }}
 
   deploy:
-    if: ${{ github.ref == 'refs/heads/main' }}  
+    # if: ${{ github.ref == 'refs/heads/main' }}  
+    if: ${{ github.ref == 'refs/heads/feature/networking' }} 
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
