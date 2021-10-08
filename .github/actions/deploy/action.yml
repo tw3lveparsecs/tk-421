@@ -26,7 +26,8 @@ runs:
     - name: test
       run: |
         echo ${{ inputs.workflow-name }}
-        
+      shell: bash
+
     - name: Download workflow artifact
       uses: dawidd6/action-download-artifact@v2.14.1
       with:
