@@ -48,3 +48,4 @@ jobs:
         with:
           azure-credentials: ${{ secrets[env.AZURE_CREDENTIALS] }}          
           workflow-file-name: ${{ env.workflow-file-name }}
+          variable-path: ./drop/.github/variables/*      

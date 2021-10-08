@@ -28,7 +28,7 @@ runs:
       with:
         name: drop
         path: |
-          ${{ inputs.actions-path }}
-          ${{ inputs.variable-path }}
+          ${{ inputs.variable-path }}           
+          ${{ inputs.actions-path }}           
           ${{ runner.temp }}/azuredeploy.json
         if-no-files-found: error
