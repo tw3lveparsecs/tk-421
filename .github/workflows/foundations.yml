@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
   pull_request:
     branches:
-      - develop
+    - develop
     paths:
-      - bicep/deploy/foundations/*  
+    - bicep/deploy/foundations/* 
   push:
     branches:
-      - develop
+    - develop
     paths:
-      - bicep/deploy/foundations/*  
+    - bicep/deploy/foundations/* 
 
 env:
   workflow-file-name: foundations.yml  
