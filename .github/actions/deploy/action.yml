@@ -45,18 +45,22 @@ runs:
       run: |                
         string=${BICEP_DIR}${BICEP_DEPLOY_NAME}        
         filepath="${string//'*'/}"
-        templatefile="drop/${filepath//'./'/}"
+        templatefile="$ARTIFACT_NAME/${filepath//'./'/}"
         echo $templatefile
         echo "deployfile=$templatefile" >> $GITHUB_ENV
       shell: bash
       env:
         BICEP_DIR: ${{ inputs.bicep-dir }}
         BICEP_DEPLOY_NAME: ${{ inputs.bicep-deploy-name }}
+        ARTIFACT_NAME: ${{ inputs.artifact-name}}
  
     - name: Deploy Bicep (Subscription Level)
       uses: Azure/cli@1.0.4
       with:
         inlineScript: |
+          cd $ARTIFACT_NAME
           az deployment sub create \
             --template-file ./${{ env.deployfile }} \
             --location ${{ env.LOCATION }}
+        env:
+          ARTIFACT_NAME: ${{ inputs.artifact-name}}
