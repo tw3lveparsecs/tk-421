@@ -42,8 +42,8 @@ runs:
     #     creds: ${{ inputs.azure-credentials }}
     
     - name: Get Bicep deployment file
-      run: |
-        $string=${BICEP_DIR}${BICEP_DEPLOY-NAME}
+      run: |        
+        $string=$BICEP_DIR$BICEP_DEPLOY_NAME
         echo $string
         #filepath="${string//'*'/}"
         #echo $filepath
