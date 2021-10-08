@@ -30,5 +30,5 @@ runs:
         path: |
           ${{ inputs.variable-path }}           
           ${{ inputs.actions-path }}           
-          $RUNNER_TEMP/azuredeploy.json
+          ${{ RUNNER_TEMP }}/azuredeploy.json
         if-no-files-found: error
