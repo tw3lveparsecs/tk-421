@@ -37,6 +37,7 @@ jobs:
   deploy:
     # if: ${{ github.ref == 'refs/heads/main' }}  
     if: ${{ github.ref == 'refs/heads/feature/networking' }} 
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
