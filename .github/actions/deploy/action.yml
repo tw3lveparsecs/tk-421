@@ -43,15 +43,15 @@ runs:
     
     - name: Get Bicep deployment file
       run: |
-        $string=$BICEP-DIR$BICEP-DEPLOY-NAME
+        $string=$BICEP_DIR$BICEP_DEPLOY-NAME
         echo $string
         filepath="${string//'*'/}"
         echo $filepath
         echo "deployfile=$filepath" >> $GITHUB_ENV
       shell: bash
       env:
-        BICEP-DIR: ${{ inputs.bicep-dir }}
-        BICEP-DEPLOY-NAME: ${{ inputs.bicep-deploy-name }}
+        BICEP_DIR: ${{ inputs.bicep-dir }}
+        BICEP_DEPLOY_NAME: ${{ inputs.bicep-deploy-name }}
  
     # - name: Deploy Bicep (Subscription Level)
     #   uses: Azure/cli@1.0.4
