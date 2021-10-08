@@ -2,16 +2,16 @@ name: Foundations
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-    - develop
-    paths:
-    - bicep/deploy/foundations/* 
-  push:
-    branches:
-    - develop
-    paths:
-    - bicep/deploy/foundations/* 
+  # pull_request:
+  #   branches:
+  #   - develop
+  #   paths:
+  #   - bicep/deploy/foundations/* 
+  # push:
+  #   branches:
+  #   - develop
+  #   paths:
+  #   - bicep/deploy/foundations/* 
 
 env:
   workflow-file-name: foundations.yml  
