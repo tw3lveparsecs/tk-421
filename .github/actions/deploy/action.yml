@@ -26,37 +26,37 @@ inputs:
 runs:
   using: "composite"
   steps:
-    # - name: Download workflow artifact
-    #   uses: dawidd6/action-download-artifact@v2.14.1
-    #   with:
-    #     workflow: ${{ inputs.workflow-file-name }}
+    - name: Download workflow artifact
+      uses: dawidd6/action-download-artifact@v2.14.1
+      with:
+        workflow: ${{ inputs.workflow-file-name }}
 
-    # - name: Set Environment Variables
-    #   uses: tw3lveparsecs/github-actions-set-variables@v0.1
-    #   with:
-    #     envFilePath: ./drop/.github/variables/*      
+    - name: Set Environment Variables
+      uses: tw3lveparsecs/github-actions-set-variables@v0.1
+      with:
+        envFilePath: ./drop/.github/variables/*      
 
-    # - name: Login to Azure
-    #   uses: azure/login@v1.1
-    #   with:
-    #     creds: ${{ inputs.azure-credentials }}
+    - name: Login to Azure
+      uses: azure/login@v1.1
+      with:
+        creds: ${{ inputs.azure-credentials }}
     
     - name: Get Bicep deployment file
       run: |                
-        string=${BICEP_DIR}${BICEP_DEPLOY_NAME}
-        echo $string
+        string=${BICEP_DIR}${BICEP_DEPLOY_NAME}        
         filepath="${string//'*'/}"
-        echo $filepath
-        echo "deployfile=$filepath" >> $GITHUB_ENV
+        templatefile="drop${filepath//'./'/}"
+        echo $templatefile
+        echo "deployfile=$templatefile" >> $GITHUB_ENV
       shell: bash
       env:
         BICEP_DIR: ${{ inputs.bicep-dir }}
         BICEP_DEPLOY_NAME: ${{ inputs.bicep-deploy-name }}
  
-    # - name: Deploy Bicep (Subscription Level)
-    #   uses: Azure/cli@1.0.4
-    #   with:
-    #     inlineScript: |
-    #       az deployment sub create \
-    #         --template-file ./drop/${{ env.deployfile }} \
-    #         --location ${{ env.LOCATION }}
+    - name: Deploy Bicep (Subscription Level)
+      uses: Azure/cli@1.0.4
+      with:
+        inlineScript: |
+          az deployment sub create \
+            --template-file ./drop/${{ env.deployfile }} \
+            --location ${{ env.LOCATION }}

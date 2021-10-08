@@ -21,24 +21,24 @@ env:
     ./bicep/modules/management/*  
 
 jobs:
-  # build: 
-  #   # if: ${{ contains(github.ref, 'refs/pull/') }}
-  #   if: ${{ github.ref == 'refs/heads/feature/networking' }}   
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Repo
-  #       uses: actions/checkout@v2
+  build: 
+    # if: ${{ contains(github.ref, 'refs/pull/') }}
+    if: ${{ github.ref == 'refs/heads/feature/networking' }}   
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
 
-  #     - name: Build Bicep Code
-  #       uses: ./.github/actions/build
-  #       with:
-  #         module-dir: ${{ env.module-dir }}
-  #         bicep-file-path: ${{ env.bicep-file-path }}
+      - name: Build Bicep Code
+        uses: ./.github/actions/build
+        with:
+          module-dir: ${{ env.module-dir }}
+          bicep-file-path: ${{ env.bicep-file-path }}
 
   deploy:
     # if: ${{ github.ref == 'refs/heads/main' }}  
     if: ${{ github.ref == 'refs/heads/feature/networking' }} 
-    # needs: build
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
