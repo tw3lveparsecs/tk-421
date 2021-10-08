@@ -18,7 +18,8 @@ runs:
   steps:
     - name: Build Bicep to ARM
       run: |
-        az bicep build --file $FILE --outfile $RUNNER_TEMP/azuredeploy.json
+        mkdir $RUNNER_TEMP/build
+        az bicep build --file $FILE --outfile $RUNNER_TEMP/build/azuredeploy.json
       shell: bash
       env:
         FILE: ${{ inputs.bicep-file-path }}
@@ -30,5 +31,5 @@ runs:
         path: |
           ${{ inputs.variable-path }}           
           ${{ inputs.actions-path }}           
-          ${{ runner.temp }}/azuredeploy.json
+          ${{ runner.temp }}/build/azuredeploy.json
         if-no-files-found: error
