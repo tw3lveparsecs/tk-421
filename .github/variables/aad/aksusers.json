@@ -4,7 +4,7 @@
         "userprincipalname": "aks-cluster-admin1"
     },
     {
-        "displayName": "aks-cluster-admin2",
-        "userPrincipalName": "aks-cluster-admin2"
+        "displayname": "aks-cluster-admin2",
+        "userprincipalname": "aks-cluster-admin2"
     }
 ]
