@@ -61,7 +61,7 @@ jobs:
                 echo "$(_jq '.displayname') User exists"
               else
                 echo "$(_jq '.displayname') User does not exist" 
-                OBJECTID=$(az ad user create --display-name "$(_jq '.displayname')" --user-principal-name "$(_jq '.userprincipalname')@${{ env.AZURE_TENANTDOMAIN }}" --force-change-password-next-login --password ${PW} --query objectId -o tsv)
+                OBJECTID=$(az ad user create --display-name "$(_jq '.displayname')" --user-principal-name "$(_jq '.userprincipalname')@${{ env.AZURE_TENANTDOMAIN }}" --force-change-password-next-login --password "${PW}" --query objectId -o tsv)
                 DISPLAYNAME=$(_jq '.displayname')
                 echo "{ \"displayName\": \"${DISPLAYNAME}\", \"objectId\": "${OBJECTID}", \"secret\": \"${PW}\" }" | jq
                 
