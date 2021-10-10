@@ -20,7 +20,7 @@ jobs:
         uses: Azure/login@v1
         with:
           creds: ${{ secrets.THOR_AZURE_CREDENTIALS }}
-          enable-AzPSSession: $false
+          enable-AzPSSession: $true
 
       - name: Set variables
         run: |
@@ -29,7 +29,7 @@ jobs:
           echo "AZURE_TENANTDOMAIN=${AZURE_TENANTDOMAIN}" >> $GITHUB_ENV
           export AZURE_TENANTID=$(az account show --query tenantId -o tsv)                                        
           echo "AZURE_TENANTID=${AZURE_TENANTID}" >> $GITHUB_ENV
-      
+
       - name: Create aks groups
         run: |                 
           OLDIFS=$IFS   
@@ -52,10 +52,10 @@ jobs:
                 echo ${row} | jq -r ${1}
               }
               echo "$(_jq '.userprincipalname')@${{ env.AZURE_TENANTDOMAIN }}"               
-              PW=$(date +%s | md5sum | base64 | head -c 32 ; echo)              
-              OBJECTID=$(az ad user create --display-name "$(_jq '.displayname')" --user-principal-name "$(_jq '.userprincipalname')@${{ env.AZURE_TENANTDOMAIN }}" --force-change-password-next-login --password ${PW} --query objectId -o tsv)
-              DISPLAYNAME=$(_jq '.displayname')
-              echo "{ \"displayName\": \"${DISPLAYNAME}\", \"objectId\": "${OBJECTID}", \"secret\": \"${PW}\" }" | jq -r
-              echo "" 
+              # PW=$(date +%s | md5sum | base64 | head -c 32 ; echo)              
+              # OBJECTID=$(az ad user create --display-name "$(_jq '.displayname')" --user-principal-name "$(_jq '.userprincipalname')@${{ env.AZURE_TENANTDOMAIN }}" --force-change-password-next-login --password ${PW} --query objectId -o tsv)
+              # DISPLAYNAME=$(_jq '.displayname')
+              # echo "{ \"displayName\": \"${DISPLAYNAME}\", \"objectId\": "${OBJECTID}", \"secret\": \"${PW}\" }" | jq -r
+              # echo "" 
           done
           IFS=$OLDIFS
