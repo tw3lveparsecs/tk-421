@@ -60,14 +60,9 @@ jobs:
               else
                 echo "$(_jq '.displayname') User does not exist" 
                 PW=$(date +%s | md5sum | base64 | head -c 32 ; echo)
-                echo "${PW}"
                 OBJECTID=$(az ad user create --display-name "$(_jq '.displayname')" --user-principal-name "$(_jq '.userprincipalname')@${{ env.AZURE_TENANTDOMAIN }}" --force-change-password-next-login --password "${PW}" --query objectId -o tsv)
-                echo "${OBJECTID}"
                 DISPLAYNAME=$(_jq '.displayname')
-                echo "${DISPLAYNAME}"
-                echo "{ \"displayName\": \"${DISPLAYNAME}\", \"objectId\": "${OBJECTID}", \"secret\": \"${PW}\" }" | jq
-                
+                # echo "{ \"displayName\": \"${DISPLAYNAME}\", \"objectId\": \"${OBJECTID}\", \"secret\": \"${PW}\" }" | jq
               fi              
-              # echo "" 
           done
           IFS=$OLDIFS
