@@ -19,8 +19,7 @@ env:
 
 jobs:
   build: 
-    # if: ${{ contains(github.ref, 'refs/pull/') }}
-    if: ${{ github.ref == 'refs/heads/develop' }}        
+    # if: ${{ contains(github.ref, 'refs/pull/') }}         
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -32,7 +31,7 @@ jobs:
           bicep-file-path: ${{ env.bicep-file-path }}
 
   deploy:
-    if: ${{ github.ref == 'refs/heads/develop' }}      
+    # if: ${{ github.ref == 'refs/heads/main' }}      
     needs: build
     runs-on: ubuntu-latest
     steps:
