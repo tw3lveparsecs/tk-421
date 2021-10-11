@@ -1,0 +1,57 @@
+name: Foundations
+
+on:
+  # pull_request:
+  #   branches:
+  #     - develop
+  #   paths:
+  #     - bicep/deploy/foundations/* 
+  # push:
+  #   branches:
+  #     - develop
+  #   paths:
+  #     - bicep/deploy/foundations/* 
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Person to greet'
+        required: true        
+
+
+env:
+  workflow-file-name: foundations.yml  
+  bicep-file-path: ./bicep/deploy/foundations/deploy.bicep
+
+jobs:
+  build: 
+    # if: ${{ contains(github.ref, 'refs/pull/') }}
+    if: ${{ github.ref == 'refs/heads/develop' }}        
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Build Bicep Code
+        uses: ./.github/actions/build
+        with:         
+          bicep-file-path: ${{ env.bicep-file-path }}
+
+  deploy:
+    if: ${{ github.ref == 'refs/heads/develop' }}      
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Set Environment Variables
+        uses: tw3lveparsecs/github-actions-set-variables@v0.1
+
+      - name: Deploy Bicep Code
+        uses: ./.github/actions/deploy
+        with:
+          azure-credentials: ${{ secrets[env.AZURE_CREDENTIALS] }}          
+          workflow-file-name: ${{ env.workflow-file-name }}
+          variable-path: ./drop/.github/variables/*      
