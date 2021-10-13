@@ -15,6 +15,7 @@ jobs:
     steps:
       - id: set-group-matrix
         run: |
+          ll -R
           group-matrix=$(jq -c '.[]' .github/variables/aad/aksgroups2.json)
           echo "::set-output name=matrix::${GROUP-MATRIX}"
     outputs:
