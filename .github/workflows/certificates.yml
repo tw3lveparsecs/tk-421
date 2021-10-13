@@ -1,0 +1,58 @@
+name: Generate Certificates
+
+on:
+  workflow_dispatch:
+    inputs:
+      domain_name:
+        description: 'Domain name used for public facing certificate. E.g. contoso.com'
+        required: true
+        type: string
+      azure_credentials:
+        description: 'Name of GitHub secret containing Azure credential used to store certificates in key vault.'
+        required: true
+        type: string
+      key_vault_resource_id:
+        description: 'Resource id of Azure Key Vault where certificates will be stored.'
+        required: true
+        type: string     
+      variable_path:
+        description: 'Directory or file path to variables used in GitHub workflows.'
+        required: false
+        default: ./.github/variables/*   
+
+
+jobs:
+  deploy:     
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Generate Certificates
+        run: |
+          # public cert
+          openssl req -x509 -nodes -days 365 -newkey rsa:2048 -out appgw.crt -keyout appgw.key -subj "/CN=bicycle.${DOMAIN_NAME}/O=Contoso Bicycle" -addext "subjectAltName = DNS:bicycle.${DOMAIN_NAME}" -addext "keyUsage = digitalSignature" -addext "extendedKeyUsage = serverAuth"
+          openssl pkcs12 -export -out appgw.pfx -in appgw.crt -inkey appgw.key -passout pass:
+          export APP_GATEWAY_LISTENER_CERTIFICATE_AKS_BASELINE=$(cat appgw.pfx | base64 | tr -d '\n')
+          # ingress controller cert
+          openssl req -x509 -nodes -days 365 -newkey rsa:2048 -out traefik-ingress-internal-aks-ingress-tls.crt -keyout traefik-ingress-internal-aks-ingress-tls.key -subj "/CN=*.aks-ingress.${DOMAIN_NAME}/O=Contoso AKS Ingress"
+          export AKS_INGRESS_CONTROLLER_CERTIFICATE_BASE64_AKS_BASELINE=$(cat traefik-ingress-internal-aks-ingress-tls.crt | base64 | tr -d '\n')
+        shell: bash
+        env:
+          DOMAIN_NAME: ${{ inputs.domain_name }}
+
+      - name: Set Environment Variables
+        uses: tw3lveparsecs/github-actions-set-variables@v0.1
+        with:
+          envFilePath: ${{ inputs.variable_path }}        
+
+      - name: Login to Azure
+        uses: azure/login@v1.1
+        with:
+          creds: ${{ secrets[inputs.azure_credentials] }}
+
+      - name: Add certificates to Key Vault
+        uses: Azure/cli@1.0.4
+        with:
+          inlineScript: |          
+            #az key vault        
