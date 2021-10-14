@@ -26,9 +26,10 @@ jobs:
           $users = (get-content -path .github/variables/aad/aksusers.json | convertfrom-json | convertto-json -Compress)
           Write-Host "::set-output name=usermatrix::$users"
         shell: pwsh
+
     outputs:
       groupmatrix: ${{ steps.group-matrix.outputs.groupmatrix }}
-      usermatrix: ${{ steps.user-matrix.outputs.usermatrix }}
+      # usermatrix: ${{ steps.user-matrix.outputs.usermatrix }}
 
   build:
     needs: set-matrix
