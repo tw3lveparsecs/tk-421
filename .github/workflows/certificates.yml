@@ -13,7 +13,7 @@ on:
         required: true
         type: string
         default: "AJ_AZURE_CREDENTIALS"
-      key_vault_name:
+      key-vault-name:
         description: 'Name of Azure Key Vault where certificates will be stored.'
         required: true
         type: string   
@@ -36,7 +36,7 @@ jobs:
 
       - name: Set Environment Variables
         run: |
-          echo ${{ inputs.key_vault_name }}
+          echo ${{ inputs.key-vault-name }}
           # echo ${{ inputs.key_vault_name }} 
           # echo AZURE_CREDENTIALS=$CREDENTIALS >> $GITHUB_ENV        
         env:
