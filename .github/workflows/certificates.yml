@@ -13,11 +13,11 @@ on:
       #   required: true
       #   type: string
       #   default: "AJ_AZURE_CREDENTIALS"
-      # keyVaultName:
-      #   description: 'Name of Azure Key Vault where certificates will be stored.'
-      #   required: true
-        # type: string   
-        # default: 'tempajb01'  
+      keyVaultName:
+        description: 'Name of Azure Key Vault where certificates will be stored.'
+        required: true
+        type: string   
+        default: 'tempajb01'  
       # variable_path:
       #   description: 'Directory or file path to variables used in GitHub workflows.'
       #   required: false
