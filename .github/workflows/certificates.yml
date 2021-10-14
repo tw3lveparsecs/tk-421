@@ -26,7 +26,6 @@ on:
 env:
   public_cert_name: "tk421Public"
   ingress_cert_name: "tk421Ingress"
-  TEST2: ${{ inputs.keyvaultname }}
 
 jobs:
   deploy:     
@@ -42,7 +41,7 @@ jobs:
           # echo ${{ inputs.key_vault_name }} 
           # echo AZURE_CREDENTIALS=$CREDENTIALS >> $GITHUB_ENV        
         env:
-          TEST: ${{ inputs.keyvaultname }}
+          TEST: ${{ inputs.KEYVAULTNAME }}
                  
 
       # - name: Login to Azure
