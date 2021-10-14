@@ -36,9 +36,11 @@ jobs:
 
       - name: Set Environment Variables
         run: |
+          echo $TEMP
           echo AZURE_CREDENTIALS=$CREDENTIALS >> $GITHUB_ENV        
         env:
-          CREDENTIALS: ${{ inputs.azure_credentials }}        
+          CREDENTIALS: ${{ inputs.azure_credentials }}
+          TEMP: ${{ inputs.key_vault_name }}        
 
       - name: Login to Azure
         uses: azure/login@v1.1
