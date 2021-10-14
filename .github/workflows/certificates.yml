@@ -2,11 +2,7 @@ name: Generate Certificates
 
 on: 
   workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'     
-        required: true
-        default: 'warning'    
+    inputs:  
       domain_name:
         description: 'Domain name used for public facing certificate. E.g. contoso.com'
         required: true
@@ -17,11 +13,11 @@ on:
         required: true
         type: string
         default: "AJ_AZURE_CREDENTIALS"
-      key-vault-name:
+      keyVaultName:
         description: 'Name of Azure Key Vault where certificates will be stored.'
         required: true
         type: string   
-        #default: 'tempajb01'  
+        default: 'tempajb01'  
       # variable_path:
       #   description: 'Directory or file path to variables used in GitHub workflows.'
       #   required: false
@@ -30,6 +26,7 @@ on:
 env:
   public_cert_name: "tk421Public"
   ingress_cert_name: "tk421Ingress"
+  TEST2: ${{ inputs.keyVaultName }}
 
 jobs:
   deploy:     
@@ -40,12 +37,12 @@ jobs:
 
       - name: Set Environment Variables
         run: |
-          echo ${{ inputs.logLevel }}
-          echo $CREDENTIALS
+          echo ${{ inputs.keyVaultName }}
+          echo $TEST
           # echo ${{ inputs.key_vault_name }} 
           # echo AZURE_CREDENTIALS=$CREDENTIALS >> $GITHUB_ENV        
         env:
-          CREDENTIALS: ${{ inputs.logLevel }}
+          TEST: ${{ inputs.keyVaultName }}
                  
 
       # - name: Login to Azure
