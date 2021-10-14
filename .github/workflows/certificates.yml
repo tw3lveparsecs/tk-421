@@ -26,7 +26,6 @@ on:
 env:
   public_cert_name: "tk421Public"
   ingress_cert_name: "tk421Ingress"
-  creds: ${{ inputs.azure_credentials }}
 
 jobs:
   deploy:     
@@ -35,15 +34,16 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v2
 
-      # - name: Set Environment Variables
-      #   uses: tw3lveparsecs/github-actions-set-variables@v0.1
-      #   with:
-      #     envFilePath: ${{ inputs.variable_path }}        
+      - name: Set Environment Variables
+        run: |
+          echo AZURE_CREDENTIALS=$CREDENTIALS >> $GITHUB_ENV        
+        env:
+          CREDENTIALS: ${{ inputs.azure_credentials }}        
 
       - name: Login to Azure
         uses: azure/login@v1.1
         with:
-          creds: ${{ secrets[inputs.azure_credentials] }}
+          creds: ${{ secrets[env.AZURE_CREDENTIALS] }}
 
       - name: Create certificates & add to Key Vault
         uses: Azure/cli@1.0.4
