@@ -3,16 +3,16 @@ name: Generate Certificates
 on: 
   workflow_dispatch:
     inputs:  
-      domain_name:
-        description: 'Domain name used for public facing certificate. E.g. contoso.com'
-        required: true
-        type: string
-        default: ajlab.com
-      azure_credentials:
-        description: 'Name of GitHub secret containing Azure credential used to store certificates in key vault.'
-        required: true
-        type: string
-        default: "AJ_AZURE_CREDENTIALS"
+      # domain_name:
+      #   description: 'Domain name used for public facing certificate. E.g. contoso.com'
+      #   required: true
+      #   type: string
+      #   default: ajlab.com
+      # azure_credentials:
+      #   description: 'Name of GitHub secret containing Azure credential used to store certificates in key vault.'
+      #   required: true
+      #   type: string
+      #   default: "AJ_AZURE_CREDENTIALS"
       keyVaultName:
         description: 'Name of Azure Key Vault where certificates will be stored.'
         required: true
