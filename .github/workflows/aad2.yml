@@ -17,8 +17,12 @@ jobs:
 
       - id: set-group-matrix
         run: |
-          group-matrix="$(jq -c '.[]' .github/variables/aad/aksgroups2.json)"
-          echo "::set-output name=matrix::${GROUP-MATRIX}"
+          # group-matrix="$(jq -c '.[]' .github/variables/aad/aksgroups2.json)"
+          # echo "::set-output name=matrix::${GROUP-MATRIX}"
+          $j = (get-content -path .github/variables/aad/aksgroups2.json | convertfrom-json | convertto-json -Compress)
+          Write-Host "::set-output name=matrix::$j"
+        shell: pwsh
+
     outputs:
       matrix: ${{ steps.set-group-matrix.outputs.matrix }}
 
