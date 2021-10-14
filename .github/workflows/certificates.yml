@@ -13,9 +13,9 @@ on:
       #   required: true
       #   type: string
       #   default: "AJ_AZURE_CREDENTIALS"
-      keyVaultName:
-        description: 'Name of Azure Key Vault where certificates will be stored.'
-        required: true
+      # keyVaultName:
+      #   description: 'Name of Azure Key Vault where certificates will be stored.'
+      #   required: true
         # type: string   
         # default: 'tempajb01'  
       # variable_path:
@@ -26,7 +26,7 @@ on:
 env:
   public_cert_name: "tk421Public"
   ingress_cert_name: "tk421Ingress"
-  TEST2: ${{ inputs.keyVaultName }}
+  TEST2: ${{ inputs.keyvaultname }}
 
 jobs:
   deploy:     
@@ -37,12 +37,12 @@ jobs:
 
       - name: Set Environment Variables
         run: |
-          echo ${{ inputs.keyVaultName }}
+          echo ${{ inputs.keyvaultname }}
           echo $TEST
           # echo ${{ inputs.key_vault_name }} 
           # echo AZURE_CREDENTIALS=$CREDENTIALS >> $GITHUB_ENV        
         env:
-          TEST: ${{ inputs.keyVaultName }}
+          TEST: ${{ inputs.keyvaultname }}
                  
 
       # - name: Login to Azure
