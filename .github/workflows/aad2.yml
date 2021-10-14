@@ -17,42 +17,40 @@ jobs:
 
       - id: set-group-matrix
         run: |
-          # group-matrix="$(jq -c '.[]' .github/variables/aad/aksgroups2.json)"
-          # echo "::set-output name=matrix::${GROUP-MATRIX}"
           $j = (get-content -path .github/variables/aad/aksgroups2.json | convertfrom-json | convertto-json -Compress)
-          Write-Host "::set-output name=matrix::$j"
+          Write-Host "::set-output name=groupmatrix::$j"
         shell: pwsh
 
     outputs:
-      matrix: ${{ steps.set-group-matrix.outputs.matrix }}
+      groupmatrix: ${{ steps.set-group-matrix.outputs.groupmatrix }}
 
   build:
     needs: set-group-matrix
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{fromJSON(needs.set-group-matrix.outputs.matrix)}}
+      matrix: ${{fromJSON(needs.set-group-matrix.outputs.groupmatrix)}}
 
     steps:
       - uses: actions/checkout@v2
 
-  #     - name: Azure Login
-  #       uses: Azure/login@v1
-  #       with:
-  #         creds: ${{ secrets.THOR_AZURE_CREDENTIALS }}
-  #         enable-AzPSSession: $true
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.THOR_AZURE_CREDENTIALS }}
+          enable-AzPSSession: $true
 
-  #     - name: Set variables
-  #       run: |
-  #         AZURE_TOKEN=$(az account get-access-token --resource-type ms-graph --query accessToken --output tsv)
-  #         export AZURE_TENANTDOMAIN=$(curl -s --header "Authorization: Bearer ${AZURE_TOKEN}" --request GET 'https://graph.microsoft.com/v1.0/domains' | jq -r '.value[] | select(.isDefault == true) | {id}[]')
-  #         echo "AZURE_TENANTDOMAIN=${AZURE_TENANTDOMAIN}" >> $GITHUB_ENV
-  #         export AZURE_TENANTID=$(az account show --query tenantId -o tsv)
-  #         echo "AZURE_TENANTID=${AZURE_TENANTID}" >> $GITHUB_ENV
+      - name: Set variables
+        run: |
+          AZURE_TOKEN=$(az account get-access-token --resource-type ms-graph --query accessToken --output tsv)
+          export AZURE_TENANTDOMAIN=$(curl -s --header "Authorization: Bearer ${AZURE_TOKEN}" --request GET 'https://graph.microsoft.com/v1.0/domains' | jq -r '.value[] | select(.isDefault == true) | {id}[]')
+          echo "AZURE_TENANTDOMAIN=${AZURE_TENANTDOMAIN}" >> $GITHUB_ENV
+          export AZURE_TENANTID=$(az account show --query tenantId -o tsv)
+          echo "AZURE_TENANTID=${AZURE_TENANTID}" >> $GITHUB_ENV
 
 
-  #     - name: Create aks groups
-  #       run: |
-  #         echo ${{ matrix.displayname }}
-  #         echo ${{ matrix.mailnickname }}
-  #         echo ${{ matrix.description }}
+      - name: Create aks groups
+        run: |
+          echo ${{ matrix.displayname }}
+          echo ${{ matrix.mailnickname }}
+          echo ${{ matrix.description }}
 
