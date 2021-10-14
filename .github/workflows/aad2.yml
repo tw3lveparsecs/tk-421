@@ -26,14 +26,14 @@ jobs:
     outputs:
       matrix: ${{ steps.set-group-matrix.outputs.matrix }}
 
-  # build:
-  #   needs: set-group-matrix
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix: ${{fromJSON(needs.set-group-matrix.outputs.matrix)}}
+  build:
+    needs: set-group-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{fromJSON(needs.set-group-matrix.outputs.matrix)}}
 
-  #   steps:
-  #     - uses: actions/checkout@v2
+    steps:
+      - uses: actions/checkout@v2
 
   #     - name: Azure Login
   #       uses: Azure/login@v1
