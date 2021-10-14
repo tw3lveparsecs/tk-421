@@ -10,25 +10,33 @@ on:
   workflow_dispatch:
 
 jobs:
-  set-group-matrix:
+  set-matrix:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - id: set-group-matrix
+      - id: group-matrix
         run: |
           $j = (get-content -path .github/variables/aad/aksgroups2.json | convertfrom-json | convertto-json -Compress)
           Write-Host "::set-output name=groupmatrix::$j"
         shell: pwsh
 
+      - id: user-matrix
+        run: |
+          $j = (get-content -path .github/variables/aad/aksusers.json | convertfrom-json | convertto-json -Compress)
+          Write-Host "::set-output name=usermatrix::$j"
+        shell: pwsh
     outputs:
-      groupmatrix: ${{ steps.set-group-matrix.outputs.groupmatrix }}
+      groupmatrix: ${{ steps.group-matrix.outputs.groupmatrix }}
+      usermatrix: ${{ steps.user-matrix.outputs.usermatrix }}
 
   build:
-    needs: set-group-matrix
+    needs: set-matrix
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{fromJSON(needs.set-group-matrix.outputs.groupmatrix)}}
+      matrix:
+        group: ${{fromJSON(needs.set-matrix.outputs.groupmatrix)}}
+        user: ${{fromJSON(needs.set-matrix.outputs.usermatrix)}}
 
     steps:
       - uses: actions/checkout@v2
