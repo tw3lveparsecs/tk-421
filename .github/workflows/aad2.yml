@@ -18,14 +18,12 @@ jobs:
       - id: group-matrix
         run: |
           $groups = (get-content -path .github/variables/aad/aksgroups2.json | convertfrom-json | convertto-json -Compress)
-          Write-Output "Creating $($groups.count) groups..."
           Write-Host "::set-output name=groupmatrix::$groups"
         shell: pwsh
 
       - id: user-matrix
         run: |
           $users = (get-content -path .github/variables/aad/aksusers.json | convertfrom-json | convertto-json -Compress)
-          Write-Output "Creating $($users.count) users..."
           Write-Host "::set-output name=usermatrix::$users"
         shell: pwsh
     outputs:
@@ -38,7 +36,7 @@ jobs:
     strategy:
       matrix:
         group: ${{fromJSON(needs.set-matrix.outputs.groupmatrix)}}
-        user: ${{fromJSON(needs.set-matrix.outputs.usermatrix)}}
+        # user: ${{fromJSON(needs.set-matrix.outputs.usermatrix)}}
 
     steps:
       - uses: actions/checkout@v2
