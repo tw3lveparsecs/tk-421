@@ -26,6 +26,7 @@ on:
 env:
   public_cert_name: "tk421Public"
   ingress_cert_name: "tk421Ingress"
+  creds: ${{ inputs.azure_credentials }}
 
 jobs:
   deploy:     
@@ -42,7 +43,7 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v1.1
         with:
-          creds: ${{ inputs.azure_credentials }}
+          creds: ${{ secrets.[env.creds] }}
 
       - name: Create certificates & add to Key Vault
         uses: Azure/cli@1.0.4
