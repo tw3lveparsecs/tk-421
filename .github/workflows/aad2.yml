@@ -35,8 +35,8 @@ jobs:
     needs: set-matrix
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        group: ${{fromJSON(needs.set-matrix.outputs.groupmatrix)}}
+      matrix: ${{fromJSON(needs.set-matrix.outputs.groupmatrix)}}
+        # group: ${{fromJSON(needs.set-matrix.outputs.groupmatrix)}}
         # user: ${{fromJSON(needs.set-matrix.outputs.usermatrix)}}
 
     steps:
