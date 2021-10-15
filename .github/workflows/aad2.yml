@@ -58,7 +58,7 @@ jobs:
 
           OLDIFS=$IFS
           IFS=$'\n'
-          for row in $(jq -c '.[]' ${{ matrix.group.users }}); do
+          for row in ${{ matrix.group.users }}; do
             # _jq() {
             #   echo ${row} | jq -r ${1}
             # }
