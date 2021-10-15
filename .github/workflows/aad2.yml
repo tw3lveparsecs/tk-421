@@ -48,23 +48,29 @@ jobs:
           export AZURE_TENANTID=$(az account show --query tenantId -o tsv)
           echo "AZURE_TENANTID=${AZURE_TENANTID}" >> $GITHUB_ENV
 
-
-      - name: Create aks groups
+      - name: PS Test
         run: |
-          echo ${{ matrix.group.groupdisplayname }}
-          echo ${{ matrix.group.groupmailnickname }}
-          echo ${{ matrix.group.groupdescription }}
-          myarray=${{ matrix.group.users }}
-          echo ${myarray[0]}
-          # OLDIFS=$IFS
-          # IFS=$'\n'
-          # for row in ${{ matrix.group.users }}; do
-          #   # _jq() {
-          #   #   echo ${row} | jq -r ${1}
-          #   # }
-          #   # echo "$(_jq '.displayname') User exists"
-          #   echo ${row}
-          # done
-          # IFS=$OLDIFS
+          $myarray = "${{ matrix.group.users }}"
+          $myarray | gm
+          $myarray
+        shell: pwsh
+
+      # - name: Create aks groups
+      #   run: |
+      #     echo ${{ matrix.group.groupdisplayname }}
+      #     echo ${{ matrix.group.groupmailnickname }}
+      #     echo ${{ matrix.group.groupdescription }}
+      #     myarray=${{ matrix.group.users }}
+      #     echo ${myarray[0]}
+      #     # OLDIFS=$IFS
+      #     # IFS=$'\n'
+      #     # for row in ${{ matrix.group.users }}; do
+      #     #   # _jq() {
+      #     #   #   echo ${row} | jq -r ${1}
+      #     #   # }
+      #     #   # echo "$(_jq '.displayname') User exists"
+      #     #   echo ${row}
+      #     # done
+      #     # IFS=$OLDIFS
 
 
