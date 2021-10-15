@@ -21,15 +21,8 @@ jobs:
           Write-Host "::set-output name=groupmatrix::$groups"
         shell: pwsh
 
-      - id: user-matrix
-        run: |
-          $users = (get-content -path .github/variables/aad/aksusers.json | convertfrom-json | convertto-json -Compress)
-          Write-Host "::set-output name=usermatrix::$users"
-        shell: pwsh
-
     outputs:
       groupmatrix: ${{ steps.group-matrix.outputs.groupmatrix }}
-      usermatrix: ${{ steps.user-matrix.outputs.usermatrix }}
 
   build:
     needs: set-matrix
@@ -37,7 +30,6 @@ jobs:
     strategy:
       matrix:
         group: ${{fromJSON(needs.set-matrix.outputs.groupmatrix)}}
-        user: ${{fromJSON(needs.set-matrix.outputs.usermatrix)}}
 
     steps:
       - uses: actions/checkout@v2

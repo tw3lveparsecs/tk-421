@@ -1,12 +1,28 @@
 [
     {
-        "displayname": "aks-cluster-admins-cluster1",
-        "mailnickname": "aks-cluster-admins-cluster1",
-        "description": "Principals in this group are cluster admins in cluster 1."
+        "groupdisplayname": "aks-cluster-admins-cluster1",
+        "groupmailnickname": "aks-cluster-admins-cluster1",
+        "groupdescription": "Principals in this group are cluster admins in cluster 1.",
+        "users":
+        [
+            {
+                "displayname": "aks-cluster-admin1",
+                "userprincipalname": "aks-cluster-admin1",
+                "memberofgroup": "aks-cluster-admins-cluster1"
+            }
+        ]
     },
     {
-        "displayname": "aks-cluster-admins-cluster2",
-        "mailnickname": "aks-cluster-admins-cluster2",
-        "description": "Principals in this group are cluster admins in cluster 2."
+        "groupdisplayname": "aks-cluster-admins-cluster2",
+        "groupmailnickname": "aks-cluster-admins-cluster2",
+        "groupdescription": "Principals in this group are cluster admins in cluster 2.",
+        "users":
+        [
+            {
+                "displayname": "aks-cluster-admin2",
+                "userprincipalname": "aks-cluster-admin2",
+                "memberofgroup": "aks-cluster-admins-cluster2"
+            }
+        ]
     }
 ]
