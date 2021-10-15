@@ -63,7 +63,7 @@ jobs:
 
           OLDIFS=$IFS
           IFS=$'\n'
-          for row in $(${{ toJSON(matrix.group.users) }} | jq ".[]"); do
+          for row in $(${{ matrix.group.users }} | jq ".[]"); do
             _jq() {
               echo ${row} | jq -r ${1}
             }
