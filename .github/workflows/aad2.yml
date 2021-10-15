@@ -17,7 +17,7 @@ jobs:
 
       - id: group-matrix
         run: |
-          $groups = (get-content -path .github/variables/aad/aksgroups2.json | convertfrom-json | convertto-json -Compress)
+          $groups = (get-content -path .github/variables/aad/aksgroups.json | convertfrom-json | convertto-json -Compress)
           Write-Host "::set-output name=groupmatrix::$groups"
         shell: pwsh
 
@@ -35,8 +35,8 @@ jobs:
     needs: set-matrix
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{fromJSON(needs.set-matrix.outputs.groupmatrix)}}
-        # group: ${{fromJSON(needs.set-matrix.outputs.groupmatrix)}}
+      matrix: # ${{fromJSON(needs.set-matrix.outputs.groupmatrix)}}
+        group: ${{fromJSON(needs.set-matrix.outputs.groupmatrix)}}
         # user: ${{fromJSON(needs.set-matrix.outputs.usermatrix)}}
 
     steps:
