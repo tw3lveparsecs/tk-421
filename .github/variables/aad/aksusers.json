@@ -1,10 +1,12 @@
 [
     {
         "displayname": "aks-cluster-admin1",
-        "userprincipalname": "aks-cluster-admin1"
+        "userprincipalname": "aks-cluster-admin1",
+        "memberofgroup": "aks-cluster-admins-cluster1"
     },
     {
         "displayname": "aks-cluster-admin2",
-        "userprincipalname": "aks-cluster-admin2"
+        "userprincipalname": "aks-cluster-admin2",
+        "memberofgroup": "aks-cluster-admins-cluster2"
     }
 ]

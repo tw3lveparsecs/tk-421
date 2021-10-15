@@ -29,15 +29,15 @@ jobs:
 
     outputs:
       groupmatrix: ${{ steps.group-matrix.outputs.groupmatrix }}
-      # usermatrix: ${{ steps.user-matrix.outputs.usermatrix }}
+      usermatrix: ${{ steps.user-matrix.outputs.usermatrix }}
 
   build:
     needs: set-matrix
     runs-on: ubuntu-latest
     strategy:
-      matrix: # ${{fromJSON(needs.set-matrix.outputs.groupmatrix)}}
+      matrix:
         group: ${{fromJSON(needs.set-matrix.outputs.groupmatrix)}}
-        # user: ${{fromJSON(needs.set-matrix.outputs.usermatrix)}}
+        user: ${{fromJSON(needs.set-matrix.outputs.usermatrix)}}
 
     steps:
       - uses: actions/checkout@v2
