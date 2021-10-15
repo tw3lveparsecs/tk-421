@@ -57,15 +57,17 @@ jobs:
 
       - name: Create aks groups
         run: |
+          # echo ${{ matrix.group.groupdisplayname }}
+          # echo ${{ matrix.group.groupmailnickname }}
+          # echo ${{ matrix.group.groupdescription }}
+
           OLDIFS=$IFS
           IFS=$'\n'
           for row in $(${{ toJSON(matrix.group.users) }} | jq ".[]"); do
-            # _jq() {
-            #   echo ${row} | jq -r ${1}
-            # }
-            # echo "$(_jq '.displayname') User exists"
-            echo ${row}
+            _jq() {
+              echo ${row} | jq -r ${1}
+            }
+            echo "$(_jq '.displayname')"
           done
           IFS=$OLDIFS
-
 
