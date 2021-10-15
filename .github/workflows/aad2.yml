@@ -50,7 +50,7 @@ jobs:
 
       - name: PS Test
         run: |
-          $myobject = "${{ toJSON(matrix.group) }}" | convertfrom-json -depth 10
+          $myobject = """${{ matrix.group }}""" | convertto-json -depth 10
           $myobject | gm
           $myobject
         shell: pwsh
