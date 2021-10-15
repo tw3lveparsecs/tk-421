@@ -62,8 +62,8 @@ jobs:
             openssl req -x509 -nodes -days 365 -newkey rsa:2048 -out traefik-ingress-internal-aks-ingress-tls.crt -keyout traefik-ingress-internal-aks-ingress-tls.key -subj "/CN=*.aks-ingress.${DOMAIN_NAME}/O=TK421 AKS Ingress"            
             openssl pkcs12 -export -out traefik-ingress-internal-aks-ingress-tls.pfx -in traefik-ingress-internal-aks-ingress-tls.crt -inkey traefik-ingress-internal-aks-ingress-tls.key -passout pass:                                   
             
-            az keyvault certificate import --name $PUBLIC_CERT_NAME --file public_cert.pfx --vault-name $KEY_VAULT
-            az keyvault certificate import --name $INGRESS_CERT_NAME --file traefik-ingress-internal-aks-ingress-tls.pfx --vault-name $KEY_VAULT                    
+            #az keyvault certificate import --name $PUBLIC_CERT_NAME --file public_cert.pfx --vault-name $KEY_VAULT
+            #az keyvault certificate import --name $INGRESS_CERT_NAME --file traefik-ingress-internal-aks-ingress-tls.pfx --vault-name $KEY_VAULT                    
         env:
           DOMAIN_NAME: ${{ github.event.inputs.domain_name }}
           KEY_VAULT: ${{ github.event.inputs.key_vault_name }}          
