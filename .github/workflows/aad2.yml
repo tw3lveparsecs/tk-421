@@ -17,7 +17,7 @@ jobs:
 
       - id: group-matrix
         run: |
-          $groups = (get-content -path .github/variables/aad/aksgroups.json | convertfrom-json | convertto-json -Compress)
+          $groups = (get-content -path .github/variables/aad/aksgroups.json | convertfrom-json -depth 10 | convertto-json -Compress)
           Write-Host "::set-output name=groupmatrix::$groups"
         shell: pwsh
 
