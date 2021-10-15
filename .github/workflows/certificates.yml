@@ -1,0 +1,49 @@
+name: Generate Certificates
+
+on:
+  workflow_dispatch:
+    inputs:
+      domain_name:
+        description: 'Domain name used for public facing certificate. E.g. contoso.com'
+        required: true
+        type: string
+      azure_credentials:
+        description: 'Name of GitHub secret containing the Azure credential used to authenticate to Azure.'
+        required: true
+        type: string
+      key_vault_name:
+        description: 'Name of Azure Key Vault where certificates will be stored.'
+        required: true
+        type: string
+
+env:
+  PUBLIC_CERT_NAME: "tk421Public"
+  INGRESS_CERT_NAME: "tk421Ingress"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Azure
+        uses: azure/login@v1.1
+        with:
+          creds: ${{ secrets[github.event.inputs.azure_credentials] }}
+
+      - name: Create certificates & add to Key Vault
+        uses: Azure/cli@1.0.4
+        with:
+          inlineScript: |
+            cd $RUNNER_TEMP
+            # public cert
+            openssl req -x509 -nodes -days 365 -newkey rsa:2048 -out public_cert.crt -keyout public_cert.key -subj "/CN=tk421.${DOMAIN_NAME}/O=tk421" -addext "subjectAltName = DNS:tk421.${DOMAIN_NAME}" -addext "keyUsage = digitalSignature" -addext "extendedKeyUsage = serverAuth"
+            openssl pkcs12 -export -out public_cert.pfx -in public_cert.crt -inkey public_cert.key -passout pass:
+
+            # ingress controller cert
+            openssl req -x509 -nodes -days 365 -newkey rsa:2048 -out traefik-ingress-internal-aks-ingress-tls.crt -keyout traefik-ingress-internal-aks-ingress-tls.key -subj "/CN=*.aks-ingress.${DOMAIN_NAME}/O=TK421 AKS Ingress"
+            openssl pkcs12 -export -out traefik-ingress-internal-aks-ingress-tls.pfx -in traefik-ingress-internal-aks-ingress-tls.crt -inkey traefik-ingress-internal-aks-ingress-tls.key -passout pass:
+
+            az keyvault certificate import --name $PUBLIC_CERT_NAME --file public_cert.pfx --vault-name $KEY_VAULT
+            az keyvault certificate import --name $INGRESS_CERT_NAME --file traefik-ingress-internal-aks-ingress-tls.pfx --vault-name $KEY_VAULT
+        env:
+          DOMAIN_NAME: ${{ github.event.inputs.domain_name }}
+          KEY_VAULT: ${{ github.event.inputs.key_vault_name }}
