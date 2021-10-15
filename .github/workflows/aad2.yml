@@ -54,8 +54,8 @@ jobs:
           echo ${{ matrix.group.groupdisplayname }}
           echo ${{ matrix.group.groupmailnickname }}
           echo ${{ matrix.group.groupdescription }}
-          echo "${{ matrix.group }}"
-
+          myarray=${{ matrix.group.users }}
+          echo ${myarray[0]}
           # OLDIFS=$IFS
           # IFS=$'\n'
           # for row in ${{ matrix.group.users }}; do
