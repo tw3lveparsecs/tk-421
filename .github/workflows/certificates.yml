@@ -42,7 +42,7 @@ jobs:
           # echo ${{ inputs.key_vault_name }} 
           # echo AZURE_CREDENTIALS=$CREDENTIALS >> $GITHUB_ENV        
         env:
-          TEST: ${{ inputs.KEYVAULTNAME }}
+          TEST: ${{ github.event.inputs.keyVaultName }}
                  
 
       # - name: Login to Azure
