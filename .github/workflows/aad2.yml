@@ -60,7 +60,9 @@ jobs:
           # echo ${{ matrix.group.groupdisplayname }}
           # echo ${{ matrix.group.groupmailnickname }}
           # echo ${{ matrix.group.groupdescription }}
-          echo ${{ matrix.group }} | jq
+          ${{ matrix.group }}
+          echo "${{ matrix.group }}" | jq
+
 
           # OLDIFS=$IFS
           # IFS=$'\n'
