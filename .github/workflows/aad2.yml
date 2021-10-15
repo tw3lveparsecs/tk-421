@@ -48,26 +48,26 @@ jobs:
       #     export AZURE_TENANTID=$(az account show --query tenantId -o tsv)
       #     echo "AZURE_TENANTID=${AZURE_TENANTID}" >> $GITHUB_ENV
 
-      # - name: PS Test
-      #   run: |
-      #     $myarray = "${{ matrix.group.users }}"
-      #     $myarray | gm
-      #     $myarray
-      #   shell: pwsh
-
-      - name: Create aks groups
+      - name: PS Test
         run: |
-          # echo ${{ matrix.group.groupdisplayname }}
-          # echo ${{ matrix.group.groupmailnickname }}
-          # echo ${{ matrix.group.groupdescription }}
+          $myobject = "${{ toJSON(matrix.group) }}" | convertfrom-json -depth 10
+          $myobject | gm
+          $myobject
+        shell: pwsh
 
-          OLDIFS=$IFS
-          IFS=$'\n'
-          for row in $(${{ matrix.group.users }} | jq ".[]"); do
-            _jq() {
-              echo ${row} | jq -r ${1}
-            }
-            echo "$(_jq '.displayname')"
-          done
-          IFS=$OLDIFS
+      # - name: Create aks groups
+      #   run: |
+      #     # echo ${{ matrix.group.groupdisplayname }}
+      #     # echo ${{ matrix.group.groupmailnickname }}
+      #     # echo ${{ matrix.group.groupdescription }}
+
+      #     OLDIFS=$IFS
+      #     IFS=$'\n'
+      #     for row in $(${{ matrix.group.users }} | jq ".[]"); do
+      #       _jq() {
+      #         echo ${row} | jq -r ${1}
+      #       }
+      #       echo "$(_jq '.displayname')"
+      #     done
+      #     IFS=$OLDIFS
 
