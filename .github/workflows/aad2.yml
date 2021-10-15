@@ -54,6 +54,6 @@ jobs:
           echo ${{ matrix.group.groupdisplayname }}
           echo ${{ matrix.group.groupmailnickname }}
           echo ${{ matrix.group.groupdescription }}
-          echo ${{ matrix.group.users }} | jq
+          echo ${{ matrix.group.users.displayname }}
 
 
