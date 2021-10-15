@@ -60,10 +60,7 @@ jobs:
           # echo ${{ matrix.group.groupdisplayname }}
           # echo ${{ matrix.group.groupmailnickname }}
           # echo ${{ matrix.group.groupdescription }}
-          ${{ toJSON(matrix.group) }}
-
-
-
+          ${{ toJSON(matrix.group) }} | jq
           # OLDIFS=$IFS
           # IFS=$'\n'
           # for row in ${{ matrix.group.users }}; do
