@@ -60,16 +60,16 @@ jobs:
           # echo ${{ matrix.group.groupdisplayname }}
           # echo ${{ matrix.group.groupmailnickname }}
           # echo ${{ matrix.group.groupdescription }}
-          ${{ toJSON(matrix.group) }} | jq
-          # OLDIFS=$IFS
-          # IFS=$'\n'
-          # for row in ${{ matrix.group.users }}; do
-          #   # _jq() {
-          #   #   echo ${row} | jq -r ${1}
-          #   # }
-          #   # echo "$(_jq '.displayname') User exists"
-          #   echo ${row}
-          # done
-          # IFS=$OLDIFS
+          # echo ${{ toJSON(matrix.group) }}
+          OLDIFS=$IFS
+          IFS=$'\n'
+          for row in $(${{ toJSON(matrix.group) }} | jq ".[].users"); do
+            # _jq() {
+            #   echo ${row} | jq -r ${1}
+            # }
+            # echo "$(_jq '.displayname') User exists"
+            echo ${row}
+          done
+          IFS=$OLDIFS
 
 
