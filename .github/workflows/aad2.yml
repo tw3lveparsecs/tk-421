@@ -54,6 +54,17 @@ jobs:
           echo ${{ matrix.group.groupdisplayname }}
           echo ${{ matrix.group.groupmailnickname }}
           echo ${{ matrix.group.groupdescription }}
-          echo ${{ matrix.group.users.displayname }}
+          echo ${{ matrix.group.users }}
+
+          OLDIFS=$IFS
+          IFS=$'\n'
+          for row in $(jq -c '.[]' ${{ matrix.group.users }}); do
+            # _jq() {
+            #   echo ${row} | jq -r ${1}
+            # }
+            # echo "$(_jq '.displayname') User exists"
+            echo ${row}
+          done
+          IFS=$OLDIFS
 
 
