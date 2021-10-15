@@ -8,11 +8,11 @@ on:
       #   required: true
       #   type: string
       #   default: ajlab.com
-      # azure_credentials:
-      #   description: 'Name of GitHub secret containing Azure credential used to store certificates in key vault.'
-      #   required: true
-      #   type: string
-      #   default: "AJ_AZURE_CREDENTIALS"
+      azure_credentials:
+        description: 'Name of GitHub secret containing Azure credential used to store certificates in key vault.'
+        required: true
+        type: string
+        default: "AJ_AZURE_CREDENTIALS"
       key_vault_name:
         description: 'Name of Azure Key Vault where certificates will be stored.'
         required: true
@@ -34,20 +34,20 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v2
 
-      - name: Set Environment Variables
-        run: |
-          echo ${{ github.event.inputs.key_vault_name }}
-          echo $key_vault_name
-          echo $TEST          
-          # echo AZURE_CREDENTIALS=$CREDENTIALS >> $GITHUB_ENV        
-        env:
-          TEST: ${{ github.event.inputs.key_vault_name }}
+      # - name: Set Environment Variables
+      #   run: |
+      #     echo ${{ github.event.inputs.key_vault_name }}
+      #     echo $key_vault_name
+      #     echo $TEST          
+      #     # echo AZURE_CREDENTIALS=$CREDENTIALS >> $GITHUB_ENV        
+      #   env:
+      #     TEST: ${{ github.event.inputs.key_vault_name }}
                  
 
-      # - name: Login to Azure
-      #   uses: azure/login@v1.1
-      #   with:
-      #     creds: ${{ secrets[env.AZURE_CREDENTIALS] }}
+      - name: Login to Azure
+        uses: azure/login@v1.1
+        with:
+          creds: ${{ secrets[github.event.inputs.azure_credentials] }}
 
       # - name: Create certificates & add to Key Vault
       #   uses: Azure/cli@1.0.4
