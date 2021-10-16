@@ -10,29 +10,26 @@ on:
   workflow_dispatch:
 
 jobs:
-  set-matrix:
+  group-matrix:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - id: aad-matrix
+      - id: group-matrix
         run: |
           $groups = (get-content -path .github/variables/aad/aksgroups.json | convertfrom-json -depth 10 | convertto-json -Depth 10 -Compress)
           Write-Host "::set-output name=groupmatrix::$groups"
-          $users = (get-content -path .github/variables/aad/aksusers.json | convertfrom-json -depth 10 | convertto-json -Depth 10 -Compress)
-          Write-Host "::set-output name=usermatrix::$users"
         shell: pwsh
 
     outputs:
-      groupmatrix: ${{ steps.aad-matrix.outputs.groupmatrix }}
-      usermatrix: ${{ steps.aad-matrix.outputs.usermatrix }}
+      groupmatrix: ${{ steps.group-matrix.outputs.groupmatrix }}
 
   groups:
-    needs: set-matrix
+    needs: group-matrix
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        group: ${{fromJSON(needs.set-matrix.outputs.groupmatrix)}}
+        group: ${{fromJSON(needs.group-matrix.outputs.groupmatrix)}}
 
     steps:
       - uses: actions/checkout@v2
@@ -74,12 +71,27 @@ jobs:
       #     done
       #     IFS=$OLDIFS
 
+    user-matrix:
+      needs: groups
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+
+        - id: user-matrix
+          run: |
+            $users = (get-content -path .github/variables/aad/aksusers.json | convertfrom-json -depth 10 | convertto-json -Depth 10 -Compress)
+            Write-Host "::set-output name=usermatrix::$users"
+          shell: pwsh
+
+    outputs:
+      usermatrix: ${{ steps.user-matrix.outputs.usermatrix }}
+
   users:
-    needs: set-matrix
+    needs: user-matrix
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        users: ${{fromJSON(needs.set-matrix.outputs.usermatrix)}}
+        user: ${{fromJSON(needs.user-matrix.outputs.usermatrix)}}
       
     steps:
       - uses: actions/checkout@v2
@@ -100,6 +112,6 @@ jobs:
 
       - name: Test
         run: |
-          echo ${{ matrix.users.displayname }}
-          echo ${{ matrix.users.userprincipalname }}
-          echo ${{ matrix.users.memberof }}
+          echo ${{ matrix.user.displayname }}
+          echo ${{ matrix.user.userprincipalname }}
+          echo ${{ matrix.user.memberof }}
