@@ -71,17 +71,17 @@ jobs:
       #     done
       #     IFS=$OLDIFS
 
-    user-matrix:
-      needs: groups
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
+  user-matrix:
+    needs: groups
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
 
-        - id: user-matrix
-          run: |
-            $users = (get-content -path .github/variables/aad/aksusers.json | convertfrom-json -depth 10 | convertto-json -Depth 10 -Compress)
-            Write-Host "::set-output name=usermatrix::$users"
-          shell: pwsh
+      - id: user-matrix
+        run: |
+          $users = (get-content -path .github/variables/aad/aksusers.json | convertfrom-json -depth 10 | convertto-json -Depth 10 -Compress)
+          Write-Host "::set-output name=usermatrix::$users"
+        shell: pwsh
 
     outputs:
       usermatrix: ${{ steps.user-matrix.outputs.usermatrix }}
