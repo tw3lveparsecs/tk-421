@@ -15,14 +15,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - id: group-matrix
+      - id: groupmatrix
         run: |
           $groups = (get-content -path .github/variables/aad/aksgroups.json | convertfrom-json -depth 10 | convertto-json -Depth 10 -Compress)
           Write-Host "::set-output name=groupmatrix::$groups"
         shell: pwsh
 
     outputs:
-      groupmatrix: ${{ steps.group-matrix.outputs.groupmatrix }}
+      groupmatrix: ${{ steps.groupmatrix.outputs.groupmatrix }}
 
   groups:
     needs: group-matrix
