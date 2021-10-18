@@ -1,7 +1,0 @@
-[
-    {
-        "displayname": "aks-cluster-admin1",
-        "userprincipalname": "aks-cluster-admin1",
-        "memberof": "aks-cluster-admins-cluster1"
-    }
-]
