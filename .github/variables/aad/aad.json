@@ -1,0 +1,18 @@
+{
+    "groups":
+    [
+        {
+            "groupdisplayname": "aks-cluster-admins-cluster1",
+            "groupmailnickname": "aks-cluster-admins-cluster1",
+            "groupdescription": "Principals in this group are cluster admins in cluster 1."
+        }
+    ],
+    "users":
+    [
+        {
+            "displayname": "aks-cluster-admin1",
+            "userprincipalname": "aks-cluster-admin1",
+            "memberof": "aks-cluster-admins-cluster1"
+        }
+    ]
+}
