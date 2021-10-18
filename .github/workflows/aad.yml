@@ -34,7 +34,7 @@ jobs:
         run: |
           OLDIFS=$IFS
           IFS=$'\n'
-          for row in $(jq -c '.groups' .github/variables/aad/aad.json); do
+          for row in $(jq -c '(.groups | .[])' .github/variables/aad/aad.json); do
               _jq() {
                 echo ${row} | jq -r ${1}
               }
@@ -53,7 +53,7 @@ jobs:
           export resourcegroup=$(jq '.vaultname' .github/variables/keyvault/keyvault.json)
           OLDIFS=$IFS
           IFS=$'\n'
-          for row in $(jq -c '.users' .github/variables/aad/aad.json); do
+          for row in $(jq -c '(.users | .[])' .github/variables/aad/aad.json); do
               _jq() {
                 echo ${row} | jq -r ${1}
               }
