@@ -2,9 +2,9 @@
     "groups":
     [
         {
-            "groupdisplayname": "aks-cluster-admins-cluster1",
-            "groupmailnickname": "aks-cluster-admins-cluster1",
-            "groupdescription": "Principals in this group are cluster admins in cluster 1."
+            "displayname": "aks-cluster-admins-cluster1",
+            "mailnickname": "aks-cluster-admins-cluster1",
+            "description": "Principals in this group are cluster admins in cluster 1."
         }
     ],
     "users":
