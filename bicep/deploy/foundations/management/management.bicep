@@ -41,7 +41,7 @@ var lawSolutions = [
 
 param lawDeploymentName string = 'logAnalytics${utcNow()}'
 
-module logAnalytics '../../../modules/management/log-analytics/main.bicep' = {
+module logAnalytics '../../../modules/monitoring/log-analytics/loganalytics.bicep' = {
   name: lawDeploymentName
   scope: resourceGroup(monitorRG.name)
   params: {
@@ -62,7 +62,7 @@ var deleteRetentionPolicy = 30
 
 param storDeploymentName string = 'storage${utcNow()}'
 
-module flowLogsStorage '../../../modules/management/storage/main.bicep' = {
+module flowLogsStorage '../../../modules/management/storage/storage.bicep' = {
   name: storDeploymentName
   scope: resourceGroup(monitorRG.name)
   params: {
