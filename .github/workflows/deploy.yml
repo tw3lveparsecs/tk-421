@@ -41,8 +41,7 @@ jobs:
 
       - name: Login to Azure
         uses: azure/login@v1.4.0
-        with:
-          # creds: ${{ secrets[env.AZURE_CREDENTIALS] }}
+        with:          
           creds: ${{ secrets.AZURE_CREDENTIALS }} 
   
       - name: Deploy Bicep (Subscription Level)
