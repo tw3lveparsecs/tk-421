@@ -18,17 +18,22 @@ env:
   bicep-file-path: ./bicep/deploy/foundations/deploy.bicep
 
 jobs:
-  build: 
-    # if: ${{ contains(github.ref, 'refs/pull/') }}         
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
+  if: ${{ contains(github.ref, 'refs/pull/') }}   
+  build:
+    uses: ./.github/workflows/build.yml
+    with:
+      variable-path: ./.github/variables/*
+      bicep-file-path: ${{ env.bicep-file-path }}
+    
+    # runs-on: ubuntu-latest
+    # steps:
+    #   - name: Checkout Repo
+    #     uses: actions/checkout@v2
 
-      - name: Build Bicep Code
-        uses: ./.github/actions/build
-        with:         
-          bicep-file-path: ${{ env.bicep-file-path }}
+    #   - name: Build Bicep Code
+    #     uses: ./.github/actions/build
+    #     with:         
+    #       bicep-file-path: ${{ env.bicep-file-path }}
 
   deploy:
     # if: ${{ github.ref == 'refs/heads/main' }}      
