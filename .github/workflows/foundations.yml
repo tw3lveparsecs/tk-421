@@ -16,7 +16,7 @@ on:
 jobs:  
   build:
     #if: ${{ contains(github.ref, 'refs/pull/') }}   
-    uses: tw3lveparsecs/tk-421/.github/workflows/build.yml@develop
+    uses: tw3lveparsecs/tk-421/.github/workflows/build.yml@feature/reuse
     with:
       variable-path: ./.github/variables/*
       bicep-file-path: ./bicep/deploy/foundations/deploy.bicep
@@ -24,7 +24,7 @@ jobs:
   deploy:
     needs: build
     # if: ${{ github.ref == 'refs/heads/main' }}        
-    uses: tw3lveparsecs/tk-421/.github/workflows/deploy.yml@develop
+    uses: tw3lveparsecs/tk-421/.github/workflows/deploy.yml@feature/reuse
     with:      
       workflow-file-name: build.yml
       variable-path: ./drop/.github/variables/* 

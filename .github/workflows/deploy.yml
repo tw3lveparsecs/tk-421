@@ -24,7 +24,7 @@ on:
         type: string      
 
 jobs:
-  build:             
+  deploy:             
     runs-on: ubuntu-latest
     steps:
       - name: Download workflow artifact
