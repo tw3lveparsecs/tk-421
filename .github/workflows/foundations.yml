@@ -27,4 +27,6 @@ jobs:
     uses: tw3lveparsecs/tk-421/.github/workflows/deploy.yml@feature/reuse
     with:      
       workflow-file-name: foundations.yml
-      variable-path: ./drop/.github/variables/* 
+      variable-path: ./drop/.github/variables/*
+    secrets:
+      AZURE_CREDENTIALS: ${{ secrets.AJ_AZURE_CREDENTIALS }}

@@ -22,7 +22,9 @@ on:
         required: false 
         default: azuredeploy.json
         type: string      
-
+    secrets:   
+      AZURE_CREDENTIALS: 
+        required: true   
 jobs:
   deploy:             
     runs-on: ubuntu-latest
