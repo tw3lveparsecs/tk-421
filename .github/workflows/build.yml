@@ -20,13 +20,13 @@ on:
 
 jobs:
   build:             
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest   
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2    
+        uses: actions/checkout@v2
         
       - name: Build Bicep to ARM
-        run: |        
+        run: |              
           az bicep build --file $FILE --outfile azuredeploy.json
         shell: bash
         env:
