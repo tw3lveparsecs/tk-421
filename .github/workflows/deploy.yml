@@ -38,7 +38,7 @@ jobs:
           envFilePath: ${{ inputs.variable-path }}
 
       - name: Login to Azure
-        uses: azure/login@v1.1
+        uses: azure/login@v1.4.0
         with:
           # creds: ${{ secrets[env.AZURE_CREDENTIALS] }}
           creds: ${{ secrets.AJ_AZURE_CREDENTIALS }} 
