@@ -19,7 +19,7 @@ jobs:
     uses: tw3lveparsecs/tk-421/.github/workflows/build.yml@develop
     with:
       variable-path: ./.github/variables/*
-      bicep-file-path: tw3lveparsecs/tk-421/bicep/deploy/foundations/deploy.bicep
+      bicep-file-path: ./bicep/deploy/foundations/deploy.bicep
     
     # runs-on: ubuntu-latest
     # steps:
