@@ -36,7 +36,8 @@ jobs:
     #       bicep-file-path: ${{ env.bicep-file-path }}
 
   deploy:
-    # if: ${{ github.ref == 'refs/heads/main' }}      
+    # if: ${{ github.ref == 'refs/heads/main' }}
+    #update to reusable      
     needs: build
     runs-on: ubuntu-latest
     steps:
