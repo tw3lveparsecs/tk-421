@@ -21,9 +21,24 @@ on:
 jobs:
   build:             
     runs-on: ubuntu-latest
+    outputs:
+      AZ_CREDS: ${{ steps.credentials.outputs.CREDENTIALS }}    
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2    
+        uses: actions/checkout@v2
+
+      - name: Set Variables Credentials
+        run: |
+          sed "" ${{ inputs.variable-path }} >> $GITHUB_ENV          
+        shell: bash
+
+      - name: Get Azure Credentials
+        id: credentials
+        run: |
+          echo "::set-output name=CREDENTIALS::$CREDENTIALS"         
+        shell: bash
+        env:
+          CREDENTIALS: ${{ env.AZURE_CREDENTIALS }}        
         
       - name: Build Bicep to ARM
         run: |              
