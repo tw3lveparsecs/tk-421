@@ -18,7 +18,7 @@ env:
   bicep-file-path: ./bicep/deploy/foundations/deploy.bicep
 
 jobs:
-  if: ${{ contains(github.ref, 'refs/pull/') }}   
+  #if: ${{ contains(github.ref, 'refs/pull/') }}   
   build:
     uses: ./.github/workflows/build.yml
     with:
