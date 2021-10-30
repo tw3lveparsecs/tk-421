@@ -1,0 +1,43 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      actions-path:
+        description: 'Directory or file path to actions.'
+        required: false
+        default: ./.github/actions/*
+        type: string
+      variable-path:
+        description: 'Directory or file path to variables.'
+        required: false
+        default: ./.github/variables/*
+        type: string
+      bicep-file-path:
+        description: 'File path to Bicep template to deploy.'
+        required: true
+        type: string
+
+jobs:
+  build:             
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2    
+        
+      - name: Build Bicep to ARM
+        run: |        
+          az bicep build --file $FILE --outfile azuredeploy.json
+        shell: bash
+        env:
+          FILE: ${{ inputs.bicep-file-path }}
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: drop
+          path: |
+            ${{ inputs.variable-path }}           
+            ${{ inputs.actions-path }}           
+            azuredeploy.json
+          if-no-files-found: error

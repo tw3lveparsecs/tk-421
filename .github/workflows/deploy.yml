@@ -1,0 +1,53 @@
+name: Deploy
+
+on:
+  workflow_call:
+    inputs:
+      artifact-name:
+        description: 'Artifact name.'
+        required: false
+        default: drop
+        type: string
+      variable-path:
+        description: 'Directory or file path to variables.'
+        required: false
+        default: .github/variables/*
+        type: string
+      workflow-file-name:
+        description: 'File name of the workflow to download artifacts from.'
+        required: true
+        type: string
+      bicep-deploy-name:
+        description: 'Name of Bicep deployment template.'
+        required: false 
+        default: azuredeploy.json
+        type: string      
+
+jobs:
+  build:             
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download workflow artifact
+        uses: dawidd6/action-download-artifact@v2.14.1
+        with:
+          workflow: ${{ inputs.workflow-file-name }}
+
+      - name: Set Environment Variables
+        uses: tw3lveparsecs/github-actions-set-variables@v0.1
+        with:
+          envFilePath: ${{ inputs.variable-path }}
+
+      - name: Login to Azure
+        uses: azure/login@v1.1
+        with:
+          creds: ${{ secrets[env.AZURE_CREDENTIALS] }} 
+  
+      - name: Deploy Bicep (Subscription Level)
+        uses: Azure/cli@1.0.4
+        with:
+          inlineScript: |          
+            az deployment sub create \
+              --template-file ./drop/$DEPLOY_FILE \
+              --location ${{ env.LOCATION }}
+        env:
+          DEPLOY_FILE: ${{ inputs.bicep-deploy-name}}    

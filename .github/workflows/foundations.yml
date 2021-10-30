@@ -13,13 +13,9 @@ on:
   #   paths:
   #     - bicep/deploy/foundations/* 
 
-env:
-  workflow-file-name: foundations.yml  
-  bicep-file-path: ./bicep/deploy/foundations/deploy.bicep
-
-jobs:
-  build: 
-    # if: ${{ contains(github.ref, 'refs/pull/') }}         
+jobs:  
+  build:
+    #if: ${{ contains(github.ref, 'refs/pull/') }}       
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -31,8 +27,8 @@ jobs:
           bicep-file-path: ${{ env.bicep-file-path }}
 
   deploy:
-    # if: ${{ github.ref == 'refs/heads/main' }}      
     needs: build
+    # if: ${{ github.ref == 'refs/heads/main' }}        
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
