@@ -15,11 +15,11 @@ on:
 
 env:
   workflow-file-name: build.yml  
-  bicep-file-path: ./bicep/deploy/foundations/deploy.bicep
+  bicep-file-path: ./bicep/deploy/foundations/deploy.bicep@develop
 
-jobs:
-  #if: ${{ contains(github.ref, 'refs/pull/') }}   
+jobs:  
   build:
+    #if: ${{ contains(github.ref, 'refs/pull/') }}   
     uses: ./.github/workflows/build.yml
     with:
       variable-path: ./.github/variables/*
@@ -38,7 +38,7 @@ jobs:
   deploy:
     needs: build
     # if: ${{ github.ref == 'refs/heads/main' }}        
-    uses: ./.github/workflows/deploy.yml
+    uses: ./.github/workflows/deploy.yml@develop
     with:
       azure-credentials: ${{ secrets[env.AZURE_CREDENTIALS] }}          
       workflow-file-name: ${{ env.workflow-file-name }}
