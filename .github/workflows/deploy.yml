@@ -17,14 +17,16 @@ on:
         description: 'File name of the workflow to download artifacts from.'
         required: true
         type: string
-      bicep-deploy-name:
-        description: 'Name of Bicep deployment template.'
+      deploy-template-name:
+        description: 'Name of deployment template.'
         required: false 
         default: azuredeploy.json
         type: string      
-
+    secrets:   
+      AZURE_CREDENTIALS: 
+        required: true   
 jobs:
-  build:             
+  deploy:             
     runs-on: ubuntu-latest
     steps:
       - name: Download workflow artifact
@@ -38,9 +40,9 @@ jobs:
           envFilePath: ${{ inputs.variable-path }}
 
       - name: Login to Azure
-        uses: azure/login@v1.1
-        with:
-          creds: ${{ secrets[env.AZURE_CREDENTIALS] }} 
+        uses: azure/login@v1.4.0
+        with:          
+          creds: ${{ secrets.AZURE_CREDENTIALS }} 
   
       - name: Deploy Bicep (Subscription Level)
         uses: Azure/cli@1.0.4
@@ -50,4 +52,4 @@ jobs:
               --template-file ./drop/$DEPLOY_FILE \
               --location ${{ env.LOCATION }}
         env:
-          DEPLOY_FILE: ${{ inputs.bicep-deploy-name}}    
+          DEPLOY_FILE: ${{ inputs.deploy-template-name}}    
