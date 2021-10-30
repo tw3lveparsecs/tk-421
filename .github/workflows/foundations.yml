@@ -21,10 +21,10 @@ jobs:
       variable-path: ./.github/variables/*
       bicep-file-path: ./bicep/deploy/foundations/deploy.bicep
 
-  deploy:
-    needs: build
-    # if: ${{ github.ref == 'refs/heads/main' }}        
-    uses: tw3lveparsecs/tk-421/.github/workflows/deploy.yml@feature/reuse
-    with:      
-      workflow-file-name: build.yml
-      variable-path: ./drop/.github/variables/* 
+  # deploy:
+  #   needs: build
+  #   # if: ${{ github.ref == 'refs/heads/main' }}        
+  #   uses: tw3lveparsecs/tk-421/.github/workflows/deploy.yml@feature/reuse
+  #   with:      
+  #     workflow-file-name: build.yml
+  #     variable-path: ./drop/.github/variables/* 
