@@ -13,17 +13,13 @@ on:
   #   paths:
   #     - bicep/deploy/foundations/* 
 
-env:
-  workflow-file-name: build.yml  
-  bicep-file-path: ./bicep/deploy/foundations/deploy.bicep
-
 jobs:  
   build:
     #if: ${{ contains(github.ref, 'refs/pull/') }}   
     uses: tw3lveparsecs/tk-421/.github/workflows/build.yml@develop
     with:
       variable-path: ./.github/variables/*
-      bicep-file-path: ${{ env.bicep-file-path }}
+      bicep-file-path: build.yml 
     
     # runs-on: ubuntu-latest
     # steps:
@@ -40,7 +36,7 @@ jobs:
     # if: ${{ github.ref == 'refs/heads/main' }}        
     uses: tw3lveparsecs/tk-421/.github/workflows/deploy.yml@develop
     with:      
-      workflow-file-name: ${{ env.workflow-file-name }}
+      workflow-file-name: ./bicep/deploy/foundations/deploy.bicep
       variable-path: ./drop/.github/variables/* 
 
     # runs-on: ubuntu-latest
