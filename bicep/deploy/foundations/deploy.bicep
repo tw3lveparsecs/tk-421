@@ -15,7 +15,7 @@ MANAGEMENT
 ======================================================================*/
 param mgmtDeploymentName string = 'mgmt${utcNow()}'
 
-module monitoring 'management/main.bicep' = {
+module monitoring 'management/management.bicep' = {
   name: mgmtDeploymentName
   params: {
     orgShortName: orgShortName
@@ -30,7 +30,7 @@ NETWORKING
 ======================================================================*/
 param netwrkDeploymentName string = 'network${utcNow()}'
 
-module networking 'networking/main.bicep' = {
+module networking 'networking/networking.bicep' = {
   name: netwrkDeploymentName
   params: {
     env: env
