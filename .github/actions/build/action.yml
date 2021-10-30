@@ -17,7 +17,8 @@ runs:
   using: "composite"
   steps:
     - name: Build Bicep to ARM
-      run: |        
+      run: |
+        ls        
         az bicep build --file $FILE --outfile azuredeploy.json
       shell: bash
       env:
