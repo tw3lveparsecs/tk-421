@@ -39,8 +39,7 @@ jobs:
     needs: build
     # if: ${{ github.ref == 'refs/heads/main' }}        
     uses: tw3lveparsecs/tk-421/.github/workflows/deploy.yml@develop
-    with:
-      azure-credentials: ${{ secrets[env.AZURE_CREDENTIALS] }}          
+    with:      
       workflow-file-name: ${{ env.workflow-file-name }}
       variable-path: ./drop/.github/variables/* 
 
