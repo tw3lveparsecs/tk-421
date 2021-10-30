@@ -11,7 +11,10 @@ on:
   #   branches:
   #     - develop
   #   paths:
-  #     - bicep/deploy/foundations/* 
+  #     - bicep/deploy/foundations/*
+
+env:
+  AZURE_CREDENTIALS: AJ_AZURE_CREDENTIALS
 
 jobs:  
   build_call:
@@ -29,4 +32,4 @@ jobs:
       workflow-file-name: foundations.yml
       variable-path: ./drop/.github/variables/*
     secrets:
-      AZURE_CREDENTIALS: ${{ secrets[needs.build.outputs.AZ_CREDS] }}
+      AZURE_CREDENTIALS: ${{ secrets[env.AZURE_CREDENTIALS] }}
