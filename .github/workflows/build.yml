@@ -26,7 +26,8 @@ jobs:
         uses: actions/checkout@v2    
         
       - name: Build Bicep to ARM
-        run: |        
+        run: |
+          ls -R        
           az bicep build --file $FILE --outfile azuredeploy.json
         shell: bash
         env:
