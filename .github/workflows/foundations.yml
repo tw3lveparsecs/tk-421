@@ -22,7 +22,7 @@ jobs:
       bicep-file-path: ./bicep/deploy/foundations/deploy.bicep
 
   deploy_call:
-    needs: build
+    needs: build_call
     # if: ${{ github.ref == 'refs/heads/main' }}        
     uses: tw3lveparsecs/tk-421/.github/workflows/deploy.yml@feature/reuse
     with:      
