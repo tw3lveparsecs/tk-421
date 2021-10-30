@@ -20,7 +20,7 @@ env:
 jobs:  
   build:
     #if: ${{ contains(github.ref, 'refs/pull/') }}   
-    uses: ./.github/workflows/build.yml@develop
+    uses: tw3lveparsecs/tk-421/.github/workflows/build.yml@develop
     with:
       variable-path: ./.github/variables/*
       bicep-file-path: ${{ env.bicep-file-path }}
@@ -38,7 +38,7 @@ jobs:
   deploy:
     needs: build
     # if: ${{ github.ref == 'refs/heads/main' }}        
-    uses: ./.github/workflows/deploy.yml@develop
+    uses: tw3lveparsecs/tk-421/.github/workflows/deploy.yml@develop
     with:
       azure-credentials: ${{ secrets[env.AZURE_CREDENTIALS] }}          
       workflow-file-name: ${{ env.workflow-file-name }}
