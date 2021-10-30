@@ -22,19 +22,19 @@ jobs:
   build:             
     runs-on: ubuntu-latest
     steps:
-        - name: Build Bicep to ARM
-          run: |        
-            az bicep build --file $FILE --outfile azuredeploy.json
-          shell: bash
-          env:
-            FILE: ${{ inputs.bicep-file-path }}
+      - name: Build Bicep to ARM
+        run: |        
+          az bicep build --file $FILE --outfile azuredeploy.json
+        shell: bash
+        env:
+          FILE: ${{ inputs.bicep-file-path }}
 
-        - name: Upload Build Artifacts
-          uses: actions/upload-artifact@v2.2.4
-          with:
-            name: drop
-            path: |
-              ${{ inputs.variable-path }}           
-              ${{ inputs.actions-path }}           
-              azuredeploy.json
-            if-no-files-found: error
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: drop
+          path: |
+            ${{ inputs.variable-path }}           
+            ${{ inputs.actions-path }}           
+            azuredeploy.json
+          if-no-files-found: error
