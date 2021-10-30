@@ -29,4 +29,4 @@ jobs:
       workflow-file-name: foundations.yml
       variable-path: ./drop/.github/variables/*
     secrets:
-      AZURE_CREDENTIALS: ${{ secrets.[needs.build.outputs.AZ_CREDS] }}
+      AZURE_CREDENTIALS: ${{ secrets.needs.build.outputs.AZ_CREDS }}
