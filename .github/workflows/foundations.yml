@@ -18,7 +18,7 @@ env:
   bicep-file-path: ./bicep/deploy/foundations/deploy.bicep
 
 jobs:
-  if: ${{ contains(github.ref, 'refs/pull/') }}   
+  #if: ${{ contains(github.ref, 'refs/pull/') }}   
   build:
     uses: ./.github/workflows/build.yml
     with:
@@ -36,19 +36,25 @@ jobs:
     #       bicep-file-path: ${{ env.bicep-file-path }}
 
   deploy:
-    # if: ${{ github.ref == 'refs/heads/main' }}      
     needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
+    # if: ${{ github.ref == 'refs/heads/main' }}        
+    uses: ./.github/workflows/deploy.yml
+    with:
+      azure-credentials: ${{ secrets[env.AZURE_CREDENTIALS] }}          
+      workflow-file-name: ${{ env.workflow-file-name }}
+      variable-path: ./drop/.github/variables/* 
 
-      - name: Set Environment Variables
-        uses: tw3lveparsecs/github-actions-set-variables@v0.1
+    # runs-on: ubuntu-latest
+    # steps:
+    #   - name: Checkout Repo
+    #     uses: actions/checkout@v2
 
-      - name: Deploy Bicep Code
-        uses: ./.github/actions/deploy
-        with:
-          azure-credentials: ${{ secrets[env.AZURE_CREDENTIALS] }}          
-          workflow-file-name: ${{ env.workflow-file-name }}
-          variable-path: ./drop/.github/variables/*      
+    #   - name: Set Environment Variables
+    #     uses: tw3lveparsecs/github-actions-set-variables@v0.1
+
+    #   - name: Deploy Bicep Code
+    #     uses: ./.github/actions/deploy
+    #     with:
+          # azure-credentials: ${{ secrets[env.AZURE_CREDENTIALS] }}          
+          # workflow-file-name: ${{ env.workflow-file-name }}
+          # variable-path: ./drop/.github/variables/*      
