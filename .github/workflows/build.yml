@@ -2,18 +2,21 @@ name: Build
 
 on:
   workflow_call:
-  inputs:
-    actions-path:
-      description: 'Directory or file path to actions.'
-      required: false
-      default: ./.github/actions/*
-    variable-path:
-      description: 'Directory or file path to variables.'
-      required: false
-      default: ./.github/variables/*
-    bicep-file-path:
-      description: 'File path to Bicep template to deploy.'
-      required: true
+    inputs:
+      actions-path:
+        description: 'Directory or file path to actions.'
+        required: false
+        default: ./.github/actions/*
+        type: string
+      variable-path:
+        description: 'Directory or file path to variables.'
+        required: false
+        default: ./.github/variables/*
+        type: string
+      bicep-file-path:
+        description: 'File path to Bicep template to deploy.'
+        required: true
+        type: string
 
 jobs:
   build:             
