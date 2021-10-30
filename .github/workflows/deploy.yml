@@ -34,15 +34,15 @@ jobs:
         with:
           workflow: ${{ inputs.workflow-file-name }}
 
-      # - name: Set Environment Variables
-      #   uses: tw3lveparsecs/github-actions-set-variables@v0.1
-      #   with:
-      #     envFilePath: ${{ inputs.variable-path }}
+      - name: Set Environment Variables
+        uses: tw3lveparsecs/github-actions-set-variables@v0.1
+        with:
+          envFilePath: ${{ inputs.variable-path }}
 
       - name: Login to Azure
         uses: azure/login@v1.4.0
         with:          
-          creds: ${{ secrets.AZURE_CREDENTIALS }} 
+          creds: ${{ secrets[env.AZURE_CREDENTIALS] }} 
   
       - name: Deploy Bicep (Subscription Level)
         uses: Azure/cli@1.0.4
