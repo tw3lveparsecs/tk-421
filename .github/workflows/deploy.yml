@@ -44,12 +44,12 @@ jobs:
         with:          
           creds: ${{ secrets.AZURE_CREDENTIALS }} 
   
-      # - name: Deploy Bicep (Subscription Level)
-      #   uses: Azure/cli@1.0.4
-      #   with:
-      #     inlineScript: |          
-      #       az deployment sub create \
-      #         --template-file ./drop/$DEPLOY_FILE \
-      #         --location ${{ env.LOCATION }}
-      #   env:
-      #     DEPLOY_FILE: ${{ inputs.deploy-template-name}}    
+      - name: Deploy Bicep (Subscription Level)
+        uses: Azure/cli@1.0.4
+        with:
+          inlineScript: |          
+            az deployment sub create \
+              --template-file ./drop/$DEPLOY_FILE \
+              --location ${{ env.LOCATION }}
+        env:
+          DEPLOY_FILE: ${{ inputs.deploy-template-name}}    

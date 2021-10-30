@@ -14,15 +14,15 @@ on:
   #     - bicep/deploy/foundations/*
 
 jobs:  
-  build_call:
+  foundations_build:
     #if: ${{ contains(github.ref, 'refs/pull/') }}   
     uses: tw3lveparsecs/tk-421/.github/workflows/build.yml@feature/reuse
     with:
       variable-path: ./.github/variables/*
       bicep-file-path: ./bicep/deploy/foundations/deploy.bicep
 
-  deploy_call:
-    needs: build_call
+  foundations_deploy:
+    needs: foundations_build
     # if: ${{ github.ref == 'refs/heads/main' }}        
     uses: tw3lveparsecs/tk-421/.github/workflows/deploy.yml@feature/reuse
     with:      
