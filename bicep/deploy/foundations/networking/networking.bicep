@@ -530,3 +530,31 @@ module spokePeering '../../../modules/networking/vnet-peering/vnetpeering.bicep'
     remoteVirtualNetworkId: vnetHub.outputs.id
   }
 }
+/*======================================================================
+PRIVATE DNS ZONES
+======================================================================*/
+param acrDnsDeploymentName string = 'acrDnsZone${utcNow()}'
+param kvDnsDeploymentName string = 'kvDnsZone${utcNow()}'
+
+var acrPrivateDnsName = 'privatelink.azurecr.io'
+var kvPrivateDnsName = 'privatelink.vaultcore.azure.net'
+
+module acrPrivateDnsZone '../../../modules/networking/private-dns-zone/private-dns-zone.bicep' = {
+  name: acrDnsDeploymentName
+  scope: resourceGroup(networkRG.name)
+  params: {
+    privateDnsZoneName: acrPrivateDnsName
+    enableVnetLink: true
+    vnetResourceId: vnetHub.outputs.id
+  }
+}
+
+module kvPrivateDnsZone '../../../modules/networking/private-dns-zone/private-dns-zone.bicep' = {
+  name: kvDnsDeploymentName
+  scope: resourceGroup(networkRG.name)
+  params: {
+    privateDnsZoneName: kvPrivateDnsName
+    enableVnetLink: true
+    vnetResourceId: vnetHub.outputs.id
+  }
+}
