@@ -20,16 +20,6 @@ jobs:
     with:
       variable-path: ./.github/variables/*
       bicep-file-path: ./bicep/deploy/foundations/deploy.bicep
-    
-    # runs-on: ubuntu-latest
-    # steps:
-    #   - name: Checkout Repo
-    #     uses: actions/checkout@v2
-
-    #   - name: Build Bicep Code
-    #     uses: ./.github/actions/build
-    #     with:         
-    #       bicep-file-path: ${{ env.bicep-file-path }}
 
   deploy:
     needs: build
@@ -38,18 +28,3 @@ jobs:
     with:      
       workflow-file-name: build.yml
       variable-path: ./drop/.github/variables/* 
-
-    # runs-on: ubuntu-latest
-    # steps:
-    #   - name: Checkout Repo
-    #     uses: actions/checkout@v2
-
-    #   - name: Set Environment Variables
-    #     uses: tw3lveparsecs/github-actions-set-variables@v0.1
-
-    #   - name: Deploy Bicep Code
-    #     uses: ./.github/actions/deploy
-    #     with:
-          # azure-credentials: ${{ secrets[env.AZURE_CREDENTIALS] }}          
-          # workflow-file-name: ${{ env.workflow-file-name }}
-          # variable-path: ./drop/.github/variables/*      

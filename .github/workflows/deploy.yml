@@ -17,8 +17,8 @@ on:
         description: 'File name of the workflow to download artifacts from.'
         required: true
         type: string
-      bicep-deploy-name:
-        description: 'Name of Bicep deployment template.'
+      deploy-template-name:
+        description: 'Name of deployment template.'
         required: false 
         default: azuredeploy.json
         type: string      
@@ -50,4 +50,4 @@ jobs:
               --template-file ./drop/$DEPLOY_FILE \
               --location ${{ env.LOCATION }}
         env:
-          DEPLOY_FILE: ${{ inputs.bicep-deploy-name}}    
+          DEPLOY_FILE: ${{ inputs.deploy-template-name}}    
