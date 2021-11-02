@@ -29,7 +29,7 @@ module acr 'main.bicep' = {
     acrSku: 'Premium'
     publicNetworkAccess: 'Enabled'
     networkRuleBypassOptions: 'AzureServices'
-    networkRules: {
+    ipRules: {
       defaultAction: 'Deny'
       ipRules: [
         {

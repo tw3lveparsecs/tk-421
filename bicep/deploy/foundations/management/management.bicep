@@ -17,9 +17,9 @@ param tags object
 /*======================================================================
 RESOURCE GROUPS
 ======================================================================*/
-var monitorResourceGroup = '${env}-monitoring-rgp'
+var monitorResourceGroup = '${env}-hub-monitoring-rgp'
 
-resource monitorRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource monitorHubRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: monitorResourceGroup
   location: location
   tags: tags
@@ -43,7 +43,7 @@ param lawDeploymentName string = 'logAnalytics${utcNow()}'
 
 module logAnalytics '../../../modules/monitoring/log-analytics/loganalytics.bicep' = {
   name: lawDeploymentName
-  scope: resourceGroup(monitorRG.name)
+  scope: resourceGroup(monitorHubRG.name)
   params: {
     name: logAnalyticsName
     sku: lawSku
@@ -64,7 +64,7 @@ param storDeploymentName string = 'storage${utcNow()}'
 
 module flowLogsStorage '../../../modules/management/storage/storage.bicep' = {
   name: storDeploymentName
-  scope: resourceGroup(monitorRG.name)
+  scope: resourceGroup(monitorHubRG.name)
   params: {
     storageAccountName: flowlogsStorageName
     storageKind: storageKind
@@ -73,6 +73,8 @@ module flowLogsStorage '../../../modules/management/storage/storage.bicep' = {
     deleteRetentionPolicy: deleteRetentionPolicy
   }
 }
-
+/*======================================================================
+OUTPUTS
+======================================================================*/
 output logAnalyticsId string = logAnalytics.outputs.id
 output flowlogsStorageId string = flowLogsStorage.outputs.id

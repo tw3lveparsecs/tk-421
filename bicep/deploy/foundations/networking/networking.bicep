@@ -20,10 +20,17 @@ param flowLogsStorageId string
 /*======================================================================
 RESOURCE GROUPS
 ======================================================================*/
-var networkResourceGroup = '${env}-network-rgp'
+var hubVnetResourceGroup = '${env}-hub-network-rgp'
+var spokeVnetResourceGroup = '${env}-spoke-network-rgp'
 
-resource networkRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: networkResourceGroup
+resource networkHubRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: hubVnetResourceGroup
+  location: location
+  tags: tags
+}
+
+resource networkSpokeRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: spokeVnetResourceGroup
   location: location
   tags: tags
 }
@@ -36,7 +43,7 @@ param nwDeploymentName string = 'networkWatcher${utcNow()}'
 
 module networkWatcher '../../../modules/networking/network-watcher/networkwatcher.bicep' = {
   name: nwDeploymentName
-  scope: resourceGroup(networkRG.name)
+  scope: resourceGroup(networkHubRG.name)
   params: {
     networkWatcherName: networkWatcherName
     location: location
@@ -65,7 +72,7 @@ param aksIngressFlowDeploymentName string = 'aksingressflowlogs${utcNow()}'
 
 module bastionNsg '../../../modules/networking/nsgs/nsgs.bicep' = {
   name: bastionNsgDeploymentName
-  scope: resourceGroup(networkRG.name)
+  scope: resourceGroup(networkHubRG.name)
   params: {
     nsgName: bastionNsgName
     enableDiagnostics: true
@@ -236,7 +243,7 @@ module bastionNsg '../../../modules/networking/nsgs/nsgs.bicep' = {
 
 module bastionFlowLogs '../../../modules/networking/flow-logs/flowlogs.bicep' = {
   name: bastionFlowDeploymentName
-  scope: resourceGroup(networkRG.name)
+  scope: resourceGroup(networkHubRG.name)
   params: {
     flowlogName: bastionFlowLogName
     location: location
@@ -249,7 +256,7 @@ module bastionFlowLogs '../../../modules/networking/flow-logs/flowlogs.bicep' = 
 
 module appGwNsg '../../../modules/networking/nsgs/nsgs.bicep' = {
   name: appGwNsgDeploymentName
-  scope: resourceGroup(networkRG.name)
+  scope: resourceGroup(networkHubRG.name)
   params: {
     nsgName: appGwNsgName
     enableDiagnostics: true
@@ -330,7 +337,7 @@ module appGwNsg '../../../modules/networking/nsgs/nsgs.bicep' = {
 
 module appGwFlowLogs '../../../modules/networking/flow-logs/flowlogs.bicep' = {
   name: appGwFlowDeploymentName
-  scope: resourceGroup(networkRG.name)
+  scope: resourceGroup(networkHubRG.name)
   params: {
     flowlogName: appGwFlowLogName
     location: location
@@ -343,7 +350,7 @@ module appGwFlowLogs '../../../modules/networking/flow-logs/flowlogs.bicep' = {
 
 module aksNodesNsg '../../../modules/networking/nsgs/nsgs.bicep' = {
   name: aksNodesNsgDeploymentName
-  scope: resourceGroup(networkRG.name)
+  scope: resourceGroup(networkSpokeRG.name)
   params: {
     nsgName: aksNodesNsgName
     enableDiagnostics: true
@@ -354,7 +361,7 @@ module aksNodesNsg '../../../modules/networking/nsgs/nsgs.bicep' = {
 
 module aksNodesFlowLogs '../../../modules/networking/flow-logs/flowlogs.bicep' = {
   name: aksNodesFlowDeploymentName
-  scope: resourceGroup(networkRG.name)
+  scope: resourceGroup(networkHubRG.name)
   params: {
     flowlogName: aksNodesFlowLogName
     location: location
@@ -367,7 +374,7 @@ module aksNodesFlowLogs '../../../modules/networking/flow-logs/flowlogs.bicep' =
 
 module aksIngressNsg '../../../modules/networking/nsgs/nsgs.bicep' = {
   name: aksIngressNsgDeploymentName
-  scope: resourceGroup(networkRG.name)
+  scope: resourceGroup(networkSpokeRG.name)
   params: {
     nsgName: aksIngressNsgName
     enableDiagnostics: true
@@ -378,7 +385,7 @@ module aksIngressNsg '../../../modules/networking/nsgs/nsgs.bicep' = {
 
 module aksIngressFlowLogs '../../../modules/networking/flow-logs/flowlogs.bicep' = {
   name: aksIngressFlowDeploymentName
-  scope: resourceGroup(networkRG.name)
+  scope: resourceGroup(networkHubRG.name)
   params: {
     flowlogName: aksIngressFlowLogName
     location: location
@@ -397,7 +404,7 @@ param udrDeploymentName string = 'udr${utcNow()}'
 
 module defaultUdr '../../../modules/networking/route-table/routetable.bicep' = {
   name: udrDeploymentName
-  scope: resourceGroup(networkRG.name)
+  scope: resourceGroup(networkHubRG.name)
   params: {
     routeTableName: defaultUdrName
     routes: [
@@ -446,7 +453,7 @@ var vnetHubSubnets = [
     nsgId: appGwNsg.outputs.id
   }
 ]
-var vnetSpokeName = '${env}-${primaryLocationCode}-workload1-vnw'
+var vnetSpokeName = '${env}-${primaryLocationCode}-straightshooter-vnw'
 var vnetSpokeAddressSpace = [
   '10.24.0.0/16'
 ]
@@ -474,7 +481,7 @@ param vnetSpokeDeploymentName string = 'vnetSpoke${utcNow()}'
 
 module vnetHub '../../../modules/networking/vnet/vnet.bicep' = {
   name: vnetHubDeploymentName
-  scope: resourceGroup(networkRG.name)
+  scope: resourceGroup(networkHubRG.name)
   params: {
     vnetName: vnetHubName
     location: location
@@ -487,7 +494,7 @@ module vnetHub '../../../modules/networking/vnet/vnet.bicep' = {
 
 module vnetSpoke '../../../modules/networking/vnet/vnet.bicep' = {
   name: vnetSpokeDeploymentName
-  scope: resourceGroup(networkRG.name)
+  scope: resourceGroup(networkSpokeRG.name)
   params: {
     vnetName: vnetSpokeName
     location: location
@@ -505,7 +512,7 @@ param spokePeerDeploymentName string = 'spokepeer${utcNow()}'
 
 module hubPeering '../../../modules/networking/vnet-peering/vnetpeering.bicep' = {
   name: hubPeerDeploymentName
-  scope: resourceGroup(networkRG.name)
+  scope: resourceGroup(networkHubRG.name)
   params: {
     vnetName: vnetHub.outputs.name
     peerName: toLower('${vnetHub.outputs.name}-to-${vnetSpoke.outputs.name}')
@@ -519,7 +526,7 @@ module hubPeering '../../../modules/networking/vnet-peering/vnetpeering.bicep' =
 
 module spokePeering '../../../modules/networking/vnet-peering/vnetpeering.bicep' = {
   name: spokePeerDeploymentName
-  scope: resourceGroup(networkRG.name)
+  scope: resourceGroup(networkSpokeRG.name)
   params: {
     vnetName: vnetSpoke.outputs.name
     peerName: toLower('${vnetSpoke.outputs.name}-to-${vnetHub.outputs.name}')
@@ -541,7 +548,7 @@ var kvPrivateDnsName = 'privatelink.vaultcore.azure.net'
 
 module acrPrivateDnsZone '../../../modules/networking/private-dns-zone/private-dns-zone.bicep' = {
   name: acrDnsDeploymentName
-  scope: resourceGroup(networkRG.name)
+  scope: resourceGroup(networkHubRG.name)
   params: {
     privateDnsZoneName: acrPrivateDnsName
     enableVnetLink: true
@@ -551,7 +558,7 @@ module acrPrivateDnsZone '../../../modules/networking/private-dns-zone/private-d
 
 module kvPrivateDnsZone '../../../modules/networking/private-dns-zone/private-dns-zone.bicep' = {
   name: kvDnsDeploymentName
-  scope: resourceGroup(networkRG.name)
+  scope: resourceGroup(networkHubRG.name)
   params: {
     privateDnsZoneName: kvPrivateDnsName
     enableVnetLink: true
