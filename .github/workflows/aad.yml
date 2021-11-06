@@ -23,7 +23,7 @@ jobs:
           enable-AzPSSession: $true
 
       - name: Check Account
-        run: /
+        run: |
           az account show
           az ad group list
 
