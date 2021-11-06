@@ -16,24 +16,23 @@ echo ${aad:?"-a is not set"}
 
 # store current value in IFS
 OLDIFS=$IFS
-
+IFS=$'\n'
 
 export vaultname=$(jq -r '.vaultname' ${keyvault})
 export resourcegroup=$(jq -r '.resourcegroup' ${keyvault})
 # export vaultname=$(jq -r '.vaultname' .github/variables/keyvault/keyvault.json)
 # export resourcegroup=$(jq -r '.resourcegroup' .github/variables/keyvault/keyvault.json)
-OLDIFS=$IFS
-IFS=$'\n'
+
+# Grab token and domain name
+AZURE_TOKEN=$(az account get-access-token --resource-type ms-graph --query accessToken --output tsv)
+export AZURE_TENANTDOMAIN=$(curl -s --header "Authorization: Bearer ${AZURE_TOKEN}" --request GET 'https://graph.microsoft.com/v1.0/domains' | jq -r '.value[] | select(.isDefault == true) | {id}[]')
+
 # for row in $(jq -c -r '(.users | .[])' .github/variables/aad/aad.json); do
 for row in $(jq -c -r '(.users | .[])' ${aad}); do
   # function to display json property
   _jq() {
     echo ${row} | jq -r ${1}
   }
-
-  # Grab token and domain name
-  AZURE_TOKEN=$(az account get-access-token --resource-type ms-graph --query accessToken --output tsv)
-  export AZURE_TENANTDOMAIN=$(curl -s --header "Authorization: Bearer ${AZURE_TOKEN}" --request GET 'https://graph.microsoft.com/v1.0/domains' | jq -r '.value[] | select(.isDefault == true) | {id}[]')
 
   # variables
   displayName="$(_jq '.displayname')"
@@ -58,7 +57,7 @@ for row in $(jq -c -r '(.users | .[])' ${aad}); do
 
   # create user if not exist
   if [[ ! -z "${userobjectid}" ]]; then
-    echo "User exists: '${userPrincipalName}'"
+    echo "User '${userPrincipalName}' exists"
     if [[ ! $(az ad user get-member-groups --id "${userPrincipalName}" --query "[?displayName=='${memberOf}'].{displayName:displayName}" -o tsv) ]]; then
       echo "Not a member of: '${memberOf}'"
       adduser=true
@@ -77,7 +76,7 @@ for row in $(jq -c -r '(.users | .[])' ${aad}); do
     while [ ! $(az ad user list --upn ${userPrincipalName} --query "[].objectId" -o tsv) ]
     do
       ((i++))
-      echo "Number $i"
+      # echo "Number $i"
       if [[ "$i" == '10' ]]; then
         break
       fi
@@ -92,6 +91,8 @@ for row in $(jq -c -r '(.users | .[])' ${aad}); do
         echo "Failed to add user to group '${memberOf}', check that group exists"
         exit 1
       fi
+    else
+      echo "User alredy a member of group '${memberOf}'"
     fi
 
 done
