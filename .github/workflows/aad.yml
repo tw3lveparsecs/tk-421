@@ -22,15 +22,8 @@ jobs:
           creds: ${{ secrets.THOR_AZURE_CREDENTIALS }}
           enable-AzPSSession: $true
 
-      - name: Check Account
-        run: |
-          az account show
-          az ad group list
-
       - name: Create aks groups
-        run: |
-          ./scripts/create-aksgroups.sh -a .github/variables/aad/aad.json
+        run: ./scripts/create-aksgroups.sh -a .github/variables/aad/aad.json
 
       - name: Create aks users
-        run: |
-          ./scripts/create-aksusers.sh -k .github/variables/keyvault/keyvault.json -a .github/variables/aad/aad.json
+        run: ./scripts/create-aksusers.sh -k .github/variables/keyvault/keyvault.json -a .github/variables/aad/aad.json
