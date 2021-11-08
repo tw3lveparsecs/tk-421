@@ -18,10 +18,9 @@ echo ${aad:?"-a is not set"}
 OLDIFS=$IFS
 IFS=$'\n'
 
+# set keyvault variables
 export vaultname=$(jq -r '.vaultname' ${keyvault})
 export resourcegroup=$(jq -r '.resourcegroup' ${keyvault})
-# export vaultname=$(jq -r '.vaultname' .github/variables/keyvault/keyvault.json)
-# export resourcegroup=$(jq -r '.resourcegroup' .github/variables/keyvault/keyvault.json)
 
 # Grab token and domain name
 AZURE_TOKEN=$(az account get-access-token --resource-type ms-graph --query accessToken --output tsv)
@@ -34,7 +33,7 @@ for row in $(jq -c -r '(.users | .[])' ${aad}); do
     echo ${row} | jq -r ${1}
   }
 
-  # variables
+  # set user variables
   displayName="$(_jq '.displayname')"
   userPrincipalName="$(_jq '.displayname')@${AZURE_TENANTDOMAIN}"
   memberOf="$(_jq '.memberof')"
@@ -83,6 +82,7 @@ for row in $(jq -c -r '(.users | .[])' ${aad}); do
       sleep 3
     done
 
+    # add user to group
     if [[ ! -z "${adduser}" ]]; then
       az ad group member add -g ${memberOf} --member-id ${userobjectid}
       if [[ $? = 0 ]];then
