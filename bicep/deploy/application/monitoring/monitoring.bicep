@@ -41,18 +41,21 @@ var lawSolutions = [
 var lawSavedSearches = [
   {
     name: 'AllPrometheus'
+    etag: '*'
     category: 'Prometheus'
     displayName: 'All collected Prometheus information'
     query: 'InsightsMetrics | where Namespace == "prometheus"'
   }
   {
     name: 'ForbiddenReponsesOnIngress'
+    etag: '*'
     category: 'Prometheus'
     displayName: 'Increase number of forbidden response on the Ingress Controller'
     query: 'let value = toscalar(InsightsMetrics | where Namespace == "prometheus" and Name == "traefik_entrypoint_requests_total" | where parse_json(Tags).code == 403 | summarize Value = avg(Val) by bin(TimeGenerated, 5m) | summarize min = min(Value)); InsightsMetrics | where Namespace == "prometheus" and Name == "traefik_entrypoint_requests_total" | where parse_json(Tags).code == 403 | summarize AggregatedValue = avg(Val)-value by bin(TimeGenerated, 5m) | order by TimeGenerated | render barchart"'
   }
   {
     name: 'NodeRebootRequested'
+    etag: '*'
     category: 'Prometheus'
     displayName: 'Nodes reboot required by kured'
     query: 'InsightsMetrics | where Namespace == "prometheus" and Name == "kured_reboot_required" | where Val > 0'

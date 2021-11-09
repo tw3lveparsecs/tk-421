@@ -167,6 +167,7 @@ module logAnalytics './main.bicep' = {
     savedSearches: [
       {
         name: 'MySearchQuery'
+        etag: '*'
         category: 'Other'
         displayName: 'Example search query'
         query: 'My search query expression'

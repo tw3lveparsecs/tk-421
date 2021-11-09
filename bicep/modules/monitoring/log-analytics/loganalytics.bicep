@@ -43,6 +43,7 @@ param dataSources array = []
 @description('Saved searches to add to workspace')
 @metadata({
   name: 'Saved search name'
+  etag: 'Saved search etag'
   category: 'The category of the saved search'
   displayName: 'Saved search display name'
   query: 'The query expression for the saved search'
