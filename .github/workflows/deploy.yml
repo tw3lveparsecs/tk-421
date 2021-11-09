@@ -47,6 +47,7 @@ jobs:
       - name: Deploy Bicep (Subscription Level)
         uses: Azure/cli@1.0.4
         with:
+          azcliversion: 2.29.2 # add due to issue https://github.com/Azure/azure-cli/issues/20154#issuecomment-958615636
           inlineScript: |          
             az deployment sub create \
               --template-file ./drop/$DEPLOY_FILE \
