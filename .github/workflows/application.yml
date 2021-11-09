@@ -1,4 +1,4 @@
-name: Foundations
+name: Application
 
 on:
   workflow_dispatch:
@@ -6,27 +6,27 @@ on:
   #   branches:
   #     - develop
   #   paths:
-  #     - bicep/deploy/foundations/* 
+  #     - bicep/deploy/application/* 
   # push:
   #   branches:
   #     - develop
   #   paths:
-  #     - bicep/deploy/foundations/*
+  #     - bicep/deploy/application/*
 
 jobs:  
-  foundations_build:
+  application_build:
     #if: ${{ contains(github.ref, 'refs/pull/') }}   
     uses: tw3lveparsecs/tk-421/.github/workflows/build.yml@develop
     with:
       variable-path: ./.github/variables/*
-      bicep-file-path: ./bicep/deploy/foundations/deploy.bicep
+      bicep-file-path: ./bicep/deploy/application/application.bicep
 
-  foundations_deploy:
-    needs: foundations_build
+  application_deploy:
+    needs: application_build
     # if: ${{ github.ref == 'refs/heads/main' }}        
     uses: tw3lveparsecs/tk-421/.github/workflows/deploy.yml@develop
     with:      
-      workflow-file-name: foundations.yml
+      workflow-file-name: application.yml
       variable-path: ./drop/.github/variables/*
     secrets:
-      AZURE_CREDENTIALS: ${{ secrets.ENTER_SECRET_NAME }} 
+      AZURE_CREDENTIALS: ${{ secrets.AJ_AZURE_CREDENTIALS }} 
