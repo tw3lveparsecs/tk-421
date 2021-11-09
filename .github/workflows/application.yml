@@ -24,7 +24,7 @@ jobs:
   application_deploy:
     needs: application_build
     # if: ${{ github.ref == 'refs/heads/main' }}        
-    uses: tw3lveparsecs/tk-421/.github/workflows/deploy.yml@develop
+    uses: tw3lveparsecs/tk-421/.github/workflows/deploy.yml@feature/app-law
     with:      
       workflow-file-name: application.yml
       variable-path: ./drop/.github/variables/*
