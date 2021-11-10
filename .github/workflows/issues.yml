@@ -1,0 +1,15 @@
+name: Issue Management
+on:
+  issues:
+    types: [opened, assigned, milestoned]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:      
+    - name: Simple Issue Labeler
+      if: github.event.issue.action == 'opened'      
+      uses: andymckay/labeler@1.0.4
+      with:
+        add-labels: 'help wanted'
+    
