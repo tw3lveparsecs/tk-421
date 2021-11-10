@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:      
     - name: Simple Issue Labeler
-      if: github.event.issues == 'opened'      
+      if: github.event_name.issues == 'opened'      
       uses: andymckay/labeler@1.0.4
       with:
         add-labels: 'help wanted'
