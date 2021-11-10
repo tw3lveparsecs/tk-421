@@ -3,13 +3,13 @@ on:
   issues:
     types: [opened, assigned, milestoned]
 
-  jobs:
+jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps:
-      if: github.event.issue.action == 'opened'
-      - name: Simple Issue Labeler
-        uses: andymckay/labeler@1.0.4
-        with:
-          add-labels: 'help wanted'
-          
+    steps:      
+    - name: Simple Issue Labeler
+      if: github.event.issue.action == 'opened'      
+      uses: andymckay/labeler@1.0.4
+      with:
+        add-labels: 'help wanted'
+    
