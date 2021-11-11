@@ -6,7 +6,7 @@ on:
 jobs:
   new_issue:
     runs-on: ubuntu-latest
-    if: github.event.issue.state == 'open' && !github.event.issue.assignee.login
+    if: github.event.issue.state == 'open' && github.event.issue.assignee.login == ""
     steps:
     - name: Add Labels to New Issues      
       uses: andymckay/labeler@1.0.4
