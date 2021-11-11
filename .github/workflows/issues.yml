@@ -1,18 +1,17 @@
 name: Issue Management
 on:
   issues:
-    #types: [opened, edited, assigned, milestoned]
+    types: [opened, assigned]
 
 jobs:
   new_issue:
     runs-on: ubuntu-latest
-    if: github.event.issue.action
+    if: github.event.issue.action.*.opened
     steps:    
     - name: Add Labels to New Issues      
       uses: andymckay/labeler@1.0.4
       with:
         add-labels: 'help wanted, enhancement'
-
 
   assigned_issue:
     runs-on: ubuntu-latest
