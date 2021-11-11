@@ -33,7 +33,7 @@ jobs:
       with:
         add-labels: 'in progress'  
 
-    - name: Move Issues to Column
+    - name: Move Issue to In Progress
       uses: kin/gh-action-move-issues-to-column@v1.0
       with:
         project-name: TK-421
