@@ -8,6 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.issue.state == 'open' && github.event.issue.assignee.login == ''
     steps:
+    - name: test
+      run: |
+        echo ${{ github.event.issue.assignee.login }}
+      shell: bash
+
     - name: Add Labels to New Issues      
       uses: andymckay/labeler@1.0.4
       with:
