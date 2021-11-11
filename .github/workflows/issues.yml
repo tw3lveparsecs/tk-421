@@ -12,7 +12,7 @@ jobs:
       run: |
         echo ${{ github.event.issue.action }}
         echo ${{ github.event.issue.action.opened }}
-        echo ${{ github.event.issue.action.*. }}
+        echo ${{ github.event.issue.action.* }}
         echo ${{ github.event.issue.state }}
       shell: bash
 
