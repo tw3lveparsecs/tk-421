@@ -6,7 +6,7 @@ on:
 jobs:
   new_issue:
     runs-on: ubuntu-latest
-    if: github.event.issue.*.action.opened
+    if: github.event.issue.*.action == 'opened'
     steps:    
     - name: Add Labels to New Issues      
       uses: andymckay/labeler@1.0.4
@@ -16,7 +16,7 @@ jobs:
 
   assigned_issue:
     runs-on: ubuntu-latest
-    if: github.event.issue.*.assignee  
+    if: github.event.issue.*.assignee.login  
     steps:  
     - name: Add In Progress Label      
       uses: andymckay/labeler@1.0.4
