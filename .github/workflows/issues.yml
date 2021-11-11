@@ -7,7 +7,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: github.event.issues == 'opened'    
+    if: github.event.issue == 'opened'    
     steps:      
     - name: Simple Issue Labeler      
       uses: andymckay/labeler@1.0.4
