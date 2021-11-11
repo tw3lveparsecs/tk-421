@@ -7,10 +7,10 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: github.event.issue == 'opened'    
+    if: github.event.issue.state == 'open'    
     steps:      
     - name: Simple Issue Labeler      
       uses: andymckay/labeler@1.0.4
       with:
-        add-labels: 'help wanted'
+        add-labels: 'help wanted', 'enhancement'
     
