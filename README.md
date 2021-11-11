@@ -13,19 +13,14 @@ All issues with the **help wanted** are available for any team member to work on
 #### Picking up a task
 1. **Open** the GitHub issue
 2. **Assign** it to yourself
-3. Add label **in progress**
-4. Remove label **help wanted**
-5. **Move** issue to project's in progress
-
-![Create GitHub Issue](docs/media/pickup-github-issue.png)
+3. GitHub bot will automatically move the issue to in progress and add/remove the appropriate labels
 
 #### Creating a task
 1. Create new GitHub Issue with the required details
-2. Add appropriate labels, e.g. help wanted, enhancement, documentation etc.
-3. Add issue to project TK-421
-4. Submit new issue
+2. Add appropriate labels, e.g. bug, documentation, etc
+3. Submit new issue
+4. GitHub bot will automatically add the required labels (enhancement/help wanted) and add the issue to the GitHub project
 
-![Create GitHub Issue](docs/media/create-github-issue.png)
 
 ### Branching
 When working on new code create a new feature branch and work directly from there. 
