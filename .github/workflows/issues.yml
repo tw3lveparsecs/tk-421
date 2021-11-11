@@ -1,7 +1,7 @@
 name: Issue Management
 on:
   issues:
-    types: [opened, edited, assigned, milestoned]
+    #types: [opened, edited, assigned, milestoned]
 
 jobs:
   deploy:
