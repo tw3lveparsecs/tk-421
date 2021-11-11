@@ -19,3 +19,9 @@ jobs:
       with:
         project: TK-421
         column: 'In progress'
+
+    - name: Remove Labels from In Progress Issues
+      if: "contains(github.event.issue.labels.*.name, 'in progress')"
+      uses: andymckay/labeler@1.0.4
+      with:
+        remove-labels: 'help wanted'        
