@@ -7,9 +7,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: github.event.issue.action == 'unassigned'    
     steps:      
-    - name: Simple Issue Labeler
-      if: github.event.issue.action == 'unassigned'    
+    - name: Simple Issue Labeler      
       uses: andymckay/labeler@1.0.4
       with:
         add-labels: 'help wanted'
