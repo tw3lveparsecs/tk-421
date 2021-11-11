@@ -13,6 +13,12 @@ jobs:
       with:
         add-labels: 'help wanted, enhancement'
 
+    - name: Add Labels to New Issues
+      if: github.event.issue.state == 'assigned'          
+      uses: andymckay/labeler@1.0.4
+      with:
+        add-labels: 'in progress'        
+
     - name: Add issue to a project
       if: "contains(github.event.issue.labels.*.name, 'in progress')"
       uses: cb80/add2project@v0.5.0
