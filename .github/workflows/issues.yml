@@ -17,7 +17,7 @@ jobs:
   assigned_issue:
     runs-on: ubuntu-latest
     if: github.event.issue.*.assignee  
-
+    steps:  
     - name: Add In Progress Label      
       uses: andymckay/labeler@1.0.4
       with:
@@ -29,8 +29,7 @@ jobs:
         project: TK-421
         column: 'In progress'
 
-    - name: Remove Labels from In Progress Issues
-      if: "contains(github.event.issue.labels.*.name, 'in progress')"
+    - name: Remove Labels from In Progress Issues      
       uses: andymckay/labeler@1.0.4
       with:
         remove-labels: 'help wanted'        
