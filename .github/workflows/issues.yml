@@ -12,5 +12,5 @@ jobs:
     - name: Simple Issue Labeler      
       uses: andymckay/labeler@1.0.4
       with:
-        add-labels: 'help wanted', 'enhancement'
+        add-labels: 'help wanted, enhancement'
     
