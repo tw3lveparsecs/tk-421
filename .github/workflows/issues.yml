@@ -1,16 +1,21 @@
 name: Issue Management
 on:
   issues:
-    types: [opened, assigned, milestoned]
-  workflow_dispatch:
+    types: [opened, edited, assigned, milestoned]
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
-    if: github.event.issue.state == 'open'    
-    steps:      
-    - name: Simple Issue Labeler      
+    runs-on: ubuntu-latest    
+    steps:    
+    - name: Add Labels to New Issues
+      if: github.event.issue.state == 'open'          
       uses: andymckay/labeler@1.0.4
       with:
         add-labels: 'help wanted, enhancement'
-    
+
+    - name: Add issue to a project
+      if: github.event.issue.label == 'in progress'     
+      uses: cb80/add2project@v0.5.0
+      with:
+        project: TK-421
+        column: 'In progress'
