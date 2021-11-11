@@ -37,8 +37,8 @@ jobs:
       uses: kin/gh-action-move-issues-to-column@v1.0
       with:
         project-name: TK-421
-		    target-column: 'In progress'
-        access-token: ${{ secrets.GITHUB_TOKEN }}
+        target-column: 'In progress'
+        access-token: ${{ secrets.GITHUB_TOKEN }}               
 
     - name: Remove Labels from In Progress Issues      
       uses: andymckay/labeler@1.0.4
