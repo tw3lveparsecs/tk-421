@@ -4,23 +4,26 @@ on:
     #types: [opened, edited, assigned, milestoned]
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest    
+  new_issue:
+    runs-on: ubuntu-latest
+    if: github.event.issue.*.action == 'opened'            
     steps:    
-    - name: Add Labels to New Issues
-      if: github.event.issue.state == 'open'          
+    - name: Add Labels to New Issues      
       uses: andymckay/labeler@1.0.4
       with:
         add-labels: 'help wanted, enhancement'
 
-    - name: Add Labels to New Issues
-      if: github.event.issue.*.assignee
+
+  assigned_issue:
+    runs-on: ubuntu-latest
+    if: github.event.issue.*.assignee  
+
+    - name: Add In Progress Label      
       uses: andymckay/labeler@1.0.4
       with:
         add-labels: 'in progress'        
 
-    - name: Add issue to a project
-      if: "contains(github.event.issue.labels.*.name, 'in progress')"
+    - name: Add issue to a project      
       uses: cb80/add2project@v0.5.0
       with:
         project: TK-421
