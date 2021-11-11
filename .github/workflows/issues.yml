@@ -8,17 +8,12 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.issue.state == 'open' && github.event.issue.assignee.login == ''
     steps:
-    - name: test
-      run: |
-        echo ${{ github.event.issue.assignee.login }}
-      shell: bash
-
-    - name: Add Labels to New Issues      
+    - name: Add labels to new issue      
       uses: andymckay/labeler@1.0.4
       with:
         add-labels: 'help wanted, enhancement'
 
-    - name: Add issue to a project      
+    - name: Add issue to project      
       uses: cb80/add2project@v0.5.0
       with:
         project: TK-421
@@ -28,19 +23,19 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.issue.assignee.login
     steps:  
-    - name: Add In Progress Label      
+    - name: Add in progress label      
       uses: andymckay/labeler@1.0.4
       with:
         add-labels: 'in progress'  
 
-    - name: Move Issue to In Progress
+    - name: Move issue to in progress
       uses: kin/gh-action-move-issues-to-column@v1.0
       with:
         project-name: TK-421
         target-column: 'In progress'
         access-token: ${{ secrets.GITHUB_TOKEN }}               
 
-    - name: Remove Labels from In Progress Issues      
+    - name: Remove labels from issue
       uses: andymckay/labeler@1.0.4
       with:
         remove-labels: 'help wanted'        
