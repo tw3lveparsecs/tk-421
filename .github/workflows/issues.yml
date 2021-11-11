@@ -7,11 +7,22 @@ jobs:
   new_issue:
     runs-on: ubuntu-latest
     if: github.event.issue.action.*.opened
-    steps:    
+    steps:
+    - name: test
+      run: |
+        echo ${{ github.event.issue.action }}
+      shell: bash
+
     - name: Add Labels to New Issues      
       uses: andymckay/labeler@1.0.4
       with:
         add-labels: 'help wanted, enhancement'
+
+    - name: Add issue to a project      
+      uses: cb80/add2project@v0.5.0
+      with:
+        project: TK-421
+        column: 'To do'        
 
   assigned_issue:
     runs-on: ubuntu-latest
