@@ -10,7 +10,7 @@ jobs:
     steps:
     - name: test
       run: |
-        echo ${{ github.event.issue.action }}
+        echo ${{ github.event.issue }}
       shell: bash
 
     - name: Add Labels to New Issues      
