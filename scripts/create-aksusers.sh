@@ -1,13 +1,46 @@
 #!/bin/bash
 
+# .SYNOPSIS
+#     Script: Create-AksUsers.sh
+#
+# .DESCRIPTION
+#     This script reads input from variable files [.github/variables/aad/aad.json] and [.github/variables/keyvault/keyvault.json], to create Azure Active Directory Users.
+#
+# .PARAMETER -a
+#     Path to the variable file [.github/variables/aad/aad.json]
+#
+# .PARAMETER -k
+#     Path to the variable file [.github/variables/keyvault/keyvault.json]
+#
+# .INPUTS
+#     None
+#
+# .NOTES
+#     Version         :	0.01
+#     Author          : Thor Schutze (Arinco)
+#
+#     Creation Date   :	15/11/2021
+#     Purpose/Change  :	Initial script development
+#     Requirements    :	Azure CLI 2.0, Jq 1.5
+#
+#     Dependencies    :	None
+#     Limitations     : None
+#
+#     Supported
+#     Platforms*      : Ubuntu GitHub runner
+#                       *Currently not tested against other platforms
+#
+#     Version History : [15/11/2021 - 0.01 - Thor Schutze]: Initial release
+#
+# .EXAMPLE
+#     Create-AksGroups.sh -a .github/variables/aad/aad.json -k .github/variables/keyvault/keyvault.json
+
 while getopts k:a: option
 do
  case "${option}"
  in
- # .github/variables/keyvault/keyvault.json
- k) keyvault=${OPTARG};;
- # .github/variables/aad/aad.json
- a) aad=${OPTARG};;
+  k) keyvault=${OPTARG};;
+  a) aad=${OPTARG};;
  esac
 done
 
