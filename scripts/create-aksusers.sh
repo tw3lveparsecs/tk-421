@@ -59,7 +59,6 @@ export resourcegroup=$(jq -r '.resourcegroup' ${keyvault})
 AZURE_TOKEN=$(az account get-access-token --resource-type ms-graph --query accessToken --output tsv)
 export AZURE_TENANTDOMAIN=$(curl -s --header "Authorization: Bearer ${AZURE_TOKEN}" --request GET 'https://graph.microsoft.com/v1.0/domains' | jq -r '.value[] | select(.isDefault == true) | {id}[]')
 
-# for row in $(jq -c -r '(.users | .[])' .github/variables/aad/aad.json); do
 for row in $(jq -c -r '(.users | .[])' ${aad}); do
   # function to display json property
   _jq() {
@@ -108,7 +107,6 @@ for row in $(jq -c -r '(.users | .[])' ${aad}); do
     while [ ! $(az ad user list --upn ${userPrincipalName} --query "[].objectId" -o tsv) ]
     do
       ((i++))
-      # echo "Number $i"
       if [[ "$i" == '10' ]]; then
         break
       fi
