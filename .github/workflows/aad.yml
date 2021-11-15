@@ -1,0 +1,26 @@
+name: Aad-Integration-CI
+
+on:
+  push:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.ENTER_SECRET_NAME }}
+          enable-AzPSSession: $true
+
+      - name: Create aks groups
+        run: ./scripts/create-aksgroups.sh -a .github/variables/aad/aad.json
+
+      - name: Create aks users
+        run: ./scripts/create-aksusers.sh -k .github/variables/keyvault/keyvault.json -a .github/variables/aad/aad.json
