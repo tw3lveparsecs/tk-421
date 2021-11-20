@@ -8,20 +8,20 @@ param ruleName string
 param ruleDescription string = ''
 
 @description('Enable the scheduled query rule')
-param enabled bool = true
+param enabled string = 'true'
 
 @description('Resource id of the Log Analytics workspace where the query needs to be executed')
 param workspaceResourceId string
 
 @description('The severity of the alert')
 @allowed([
-  0
-  1
-  2
-  3
-  4
+  '0'
+  '1'
+  '2'
+  '3'
+  '4'
 ])
-param severity int = 3
+param severity string = '3'
 
 @description('How often the metric alert is evaluated (in minutes)')
 @allowed([
@@ -123,7 +123,22 @@ var metricTrigger = {
   thresholdOperator: breachesThresholdOperator
 }
 
-var odata = odataType == 'AlertingAction' ? 'Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction' : 'Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.LogToMetricAction'
+var action = odataType == 'AlertingAction' ? {
+  severity: severity
+  aznsAction: {
+    actionGroup: actions
+  }
+  throttlingInMin: suppressForMinutes
+  trigger: {
+    thresholdOperator: metricResultCountThresholdOperator
+    threshold: metricResultCountThreshold
+    metricTrigger: (empty(metricColumn) ? null : metricTrigger)
+  }
+  'odata.type': 'Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction'
+} : {
+  'odata.type': 'Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.LogToMetricAction'
+  criteria: criterias
+}
 
 resource scheduledQueryRule 'Microsoft.Insights/scheduledQueryRules@2018-04-16' = {
   name: ruleName
@@ -141,19 +156,6 @@ resource scheduledQueryRule 'Microsoft.Insights/scheduledQueryRules@2018-04-16' 
       frequencyInMinutes: evaluationFrequency
       timeWindowInMinutes: windowSize
     }
-    action: {
-      severity: severity
-      aznsAction: {
-        actionGroup: actions
-      }
-      throttlingInMin: suppressForMinutes
-      trigger: {
-        thresholdOperator: metricResultCountThresholdOperator
-        threshold: metricResultCountThreshold
-        metricTrigger: (empty(metricColumn) ? null : metricTrigger)
-      }
-      'odata.type': 'Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.${odata}'
-      criteria: criterias
-    }
+    action: action
   }
 }
