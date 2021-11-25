@@ -11,6 +11,25 @@ var tags = {
   environment: env
   application: 'straight-shooter'
 }
+var appName = 'straightshooter'
+/*======================================================================
+RESOURCE GROUPS
+======================================================================*/
+var appMonitorResourceGroup = '${env}-spoke-monitoring2-rgp'
+var appResourceGroup = '${env}-spoke-straightshooter2-rgp'
+
+resource appMonitorRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: appMonitorResourceGroup
+  location: location
+  tags: tags
+}
+
+resource applicationRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: appResourceGroup
+  location: location
+  tags: tags
+}
+
 /*======================================================================
 MONITORING
 ======================================================================*/
@@ -22,39 +41,39 @@ module monitoring 'monitoring/monitoring.bicep' = {
     env: env
     orgShortName: orgShortName
     primaryLocationCode: primaryLocationCode
-    location: location
-    tags: tags
+    appName: appName
+    monitorResourceGroup: appMonitorRG.name
+    clusterResourceGroup: applicationRG.name
   }
 }
 /*======================================================================
 CLUSTER
 ======================================================================*/
-// param clusterDeploymentName string = 'cluster${utcNow()}'
+param clusterDeploymentName string = 'cluster${utcNow()}'
 
-// var spokeVnetResourceGroup = '${env}-spoke-network-rgp'
-// var spokeVnetName = '${env}-${primaryLocationCode}-straightshooter-vnw'
-// var acrPrivateEndpointSubnetName = 'AksNodes'
-// var acrDnsZoneName = 'privatelink.azurecr.io'
-// var acrDnsZoneResourceGroup = '${env}-hub-network-rgp'
-// var hubSubscription = subscription().subscriptionId // replace with hub subscription id if hub exists in a different subscription to spoke
+var spokeVnetResourceGroup = '${env}-spoke-network-rgp'
+var spokeVnetName = '${env}-${primaryLocationCode}-straightshooter-vnw'
+var acrPrivateEndpointSubnetName = 'AksNodes'
+var acrDnsZoneName = 'privatelink.azurecr.io'
+var acrDnsZoneResourceGroup = '${env}-hub-network-rgp'
+var hubSubscription = subscription().subscriptionId // replace with hub subscription id if hub exists in a different subscription to spoke
 
-// resource spokeVnet 'Microsoft.Network/virtualNetworks@2021-02-01' existing = {
-//   name: spokeVnetName
-//   scope: resourceGroup(spokeVnetResourceGroup)
-// }
+resource spokeVnet 'Microsoft.Network/virtualNetworks@2021-02-01' existing = {
+  name: spokeVnetName
+  scope: resourceGroup(spokeVnetResourceGroup)
+}
 
-// resource acrDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' existing = {
-//   name: acrDnsZoneName
-//   scope: resourceGroup(hubSubscription, acrDnsZoneResourceGroup)
-// }
+resource acrDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' existing = {
+  name: acrDnsZoneName
+  scope: resourceGroup(hubSubscription, acrDnsZoneResourceGroup)
+}
 
-// module cluster 'cluster/cluster.bicep' = {
-//   name: clusterDeploymentName
-//   params: {
-//     env: env
-//     location: location
-//     tags: tags
-//     acrPrivateEndpointSubnetId: '${spokeVnet.id}/subnets/${acrPrivateEndpointSubnetName}'
-//     acrPrivateDnsZoneId: acrDnsZone.id
-//   }
-// }
+module cluster 'cluster/cluster.bicep' = {
+  name: clusterDeploymentName
+  params: {
+    env: env
+    clusterResourceGroup: applicationRG.name
+    acrPrivateEndpointSubnetId: '${spokeVnet.id}/subnets/${acrPrivateEndpointSubnetName}'
+    acrPrivateDnsZoneId: acrDnsZone.id
+  }
+}

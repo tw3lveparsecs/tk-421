@@ -9,21 +9,14 @@ param primaryLocationCode string
 @description('Deployment environment')
 param env string
 
-@description('Azure resource location')
-param location string
+@description('Application name')
+param appName string
 
-@description('Object containing tags')
-param tags object
-/*======================================================================
-RESOURCE GROUPS
-======================================================================*/
-var appMonitorResourceGroup = '${env}-spoke-monitoring-rgp'
+@description('Object containing the monitoring resource group')
+param monitorResourceGroup string
 
-resource appMonitorRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: appMonitorResourceGroup
-  location: location
-  tags: tags
-}
+@description('Object containing the cluster resource group')
+param clusterResourceGroup string
 /*======================================================================
 LOG ANALYTICS
 ======================================================================*/
@@ -66,12 +59,81 @@ param lawDeploymentName string = 'logAnalytics${utcNow()}'
 
 module logAnalytics '../../../modules/monitoring/log-analytics/loganalytics.bicep' = {
   name: lawDeploymentName
-  scope: resourceGroup(appMonitorRG.name)
+  scope: resourceGroup(monitorResourceGroup)
   params: {
     name: logAnalyticsName
     sku: lawSku
     retentionInDays: lawRetention
     solutions: lawSolutions
     savedSearches: lawSavedSearches
+  }
+}
+/*======================================================================
+SCHEDULED QUERY RULES
+======================================================================*/
+var clusterName = toLower('${env}-${primaryLocationCode}-${appName}-aks')
+var ruleName = 'PodFailedScheduledQuery'
+var ruleDescription = 'Alert on pod Failed phase'
+var ruleQuery = 'let endDateTime = now(); let startDateTime = ago(1h); let trendBinSize = 1m; let clusterName = "${clusterName}"; KubePodInventory | where TimeGenerated < endDateTime | where TimeGenerated >= startDateTime | where ClusterName == clusterName | distinct ClusterName, TimeGenerated | summarize ClusterSnapshotCount = count() by bin(TimeGenerated, trendBinSize), ClusterName | join hint.strategy=broadcast ( KubePodInventory | where TimeGenerated < endDateTime | where TimeGenerated >= startDateTime | distinct ClusterName, Computer, PodUid, TimeGenerated, PodStatus | summarize TotalCount = count(), PendingCount = sumif(1, PodStatus =~ "Pending"), RunningCount = sumif(1, PodStatus =~ "Running"), SucceededCount = sumif(1, PodStatus =~ "Succeeded"), FailedCount = sumif(1, PodStatus =~ "Failed") by ClusterName, bin(TimeGenerated, trendBinSize) ) on ClusterName, TimeGenerated | extend UnknownCount = TotalCount - PendingCount - RunningCount - SucceededCount - FailedCount | project TimeGenerated, TotalCount = todouble(TotalCount) / ClusterSnapshotCount, PendingCount = todouble(PendingCount) / ClusterSnapshotCount, RunningCount = todouble(RunningCount) / ClusterSnapshotCount, SucceededCount = todouble(SucceededCount) / ClusterSnapshotCount, FailedCount = todouble(FailedCount) / ClusterSnapshotCount, UnknownCount = todouble(UnknownCount) / ClusterSnapshotCount| summarize AggregatedValue = avg(FailedCount) by bin(TimeGenerated, trendBinSize)'
+var evaluationFrequency = 5
+var windowSize = 10
+var odataType = 'AlertingAction'
+var severity = '3'
+var breachesThresholdOperator = 'GreaterThan'
+var breachesThreshold = 3
+var breachesTriggerType = 'Consecutive'
+var metricResultCountThresholdOperator = 'GreaterThan'
+var metricResultCountThreshold = 2
+
+param scheduleQueryRuleDeploymentName string = 'scheduledQueryRule${utcNow()}'
+
+module scheduledQueryRule '../../../modules/monitoring/scheduled-query-rule/scheduledqueryrule.bicep' = {
+  name: scheduleQueryRuleDeploymentName
+  scope: resourceGroup(monitorResourceGroup)
+  params: {
+    ruleName: ruleName
+    ruleDescription: ruleDescription
+    query: ruleQuery
+    workspaceResourceId: logAnalytics.outputs.id
+    evaluationFrequency: evaluationFrequency
+    windowSize: windowSize
+    odataType: odataType
+    severity: severity
+    breachesThresholdOperator: breachesThresholdOperator
+    breachesThreshold: breachesThreshold
+    breachesTriggerType: breachesTriggerType
+    metricResultCountThresholdOperator: metricResultCountThresholdOperator
+    metricResultCountThreshold: metricResultCountThreshold
+  }
+}
+
+/*======================================================================
+ACTIVITY LOG ALERT
+======================================================================*/
+var activityAlertName = 'AllAzureAdvisorAlert'
+var activityAlertDescription = 'All azure advisor alerts'
+var activityAlertConditions = [
+  {
+    field: 'category'
+    equals: 'Recommendation'
+  }
+  {
+    field: 'operationName'
+    equals: 'Microsoft.Advisor/recommendations/available/action'
+  }
+]
+
+param deploymentName string = 'activitylogalert${utcNow()}'
+
+module activityLogAlert '../../../modules/monitoring/activity-log-alert/activitylogalert.bicep' = {
+  name: deploymentName
+  scope: resourceGroup(monitorResourceGroup)
+  params: {
+    alertName: activityAlertName
+    alertDescription: activityAlertDescription
+    conditions: activityAlertConditions
+    scopes: [
+      resourceId('Microsoft.Resources/resourceGroups', clusterResourceGroup)
+    ]
   }
 }
