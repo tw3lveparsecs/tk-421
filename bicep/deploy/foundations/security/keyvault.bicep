@@ -1,4 +1,8 @@
-/* ToDo: AddLog Analytics integration*/
+/* ToDo:
+    Add Network ACLs
+    Add Log Analytics integration
+    Add Resource Locks
+*/
 targetScope = 'subscription'
 
 @description('Airport location code or alternative short location description')
