@@ -9,24 +9,14 @@ param primaryLocationCode string
 @description('Deployment environment')
 param env string
 
-@description('Azure resource location')
-param location string
-
 @description('Application name')
 param appName string
 
-@description('Object containing tags')
-param tags object
-/*======================================================================
-RESOURCE GROUPS
-======================================================================*/
-var appMonitorResourceGroup = '${env}-spoke-monitoring-rgp'
+@description('Object containing the monitoring resource group')
+param monitorResourceGroup string
 
-resource appMonitorRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: appMonitorResourceGroup
-  location: location
-  tags: tags
-}
+@description('Object containing the cluster resource group')
+param clusterResourceGroup string
 /*======================================================================
 LOG ANALYTICS
 ======================================================================*/
@@ -69,7 +59,7 @@ param lawDeploymentName string = 'logAnalytics${utcNow()}'
 
 module logAnalytics '../../../modules/monitoring/log-analytics/loganalytics.bicep' = {
   name: lawDeploymentName
-  scope: resourceGroup(appMonitorRG.name)
+  scope: resourceGroup(monitorResourceGroup)
   params: {
     name: logAnalyticsName
     sku: lawSku
@@ -99,7 +89,7 @@ param scheduleQueryRuleDeploymentName string = 'scheduledQueryRule${utcNow()}'
 
 module scheduledQueryRule '../../../modules/monitoring/scheduled-query-rule/scheduledqueryrule.bicep' = {
   name: scheduleQueryRuleDeploymentName
-  scope: resourceGroup(appMonitorRG.name)
+  scope: resourceGroup(monitorResourceGroup)
   params: {
     ruleName: ruleName
     ruleDescription: ruleDescription
@@ -114,5 +104,36 @@ module scheduledQueryRule '../../../modules/monitoring/scheduled-query-rule/sche
     breachesTriggerType: breachesTriggerType
     metricResultCountThresholdOperator: metricResultCountThresholdOperator
     metricResultCountThreshold: metricResultCountThreshold
+  }
+}
+
+/*======================================================================
+ACTIVITY LOG ALERT
+======================================================================*/
+var activityAlertName = 'AllAzureAdvisorAlert'
+var activityAlertDescription = 'All azure advisor alerts'
+var activityAlertConditions = [
+  {
+    field: 'category'
+    equals: 'Recommendation'
+  }
+  {
+    field: 'operationName'
+    equals: 'Microsoft.Advisor/recommendations/available/action'
+  }
+]
+
+param deploymentName string = 'activitylogalert${utcNow()}'
+
+module activityLogAlert '../../../modules/monitoring/activity-log-alert/activitylogalert.bicep' = {
+  name: deploymentName
+  scope: resourceGroup(monitorResourceGroup)
+  params: {
+    alertName: activityAlertName
+    alertDescription: activityAlertDescription
+    conditions: activityAlertConditions
+    scopes: [
+      resourceId('Microsoft.Resources/resourceGroups', clusterResourceGroup)
+    ]
   }
 }

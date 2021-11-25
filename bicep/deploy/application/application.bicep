@@ -13,6 +13,24 @@ var tags = {
 }
 var appName = 'straightshooter'
 /*======================================================================
+RESOURCE GROUPS
+======================================================================*/
+var appMonitorResourceGroup = '${env}-spoke-monitoring2-rgp'
+var appResourceGroup = '${env}-spoke-straightshooter2-rgp'
+
+resource appMonitorRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: appMonitorResourceGroup
+  location: location
+  tags: tags
+}
+
+resource applicationRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: appResourceGroup
+  location: location
+  tags: tags
+}
+
+/*======================================================================
 MONITORING
 ======================================================================*/
 param monitorDeploymentName string = 'monitoring${utcNow()}'
@@ -23,9 +41,9 @@ module monitoring 'monitoring/monitoring.bicep' = {
     env: env
     orgShortName: orgShortName
     primaryLocationCode: primaryLocationCode
-    location: location
-    tags: tags
     appName: appName
+    monitorResourceGroup: appMonitorRG.name
+    clusterResourceGroup: applicationRG.name
   }
 }
 /*======================================================================
@@ -54,8 +72,7 @@ module cluster 'cluster/cluster.bicep' = {
   name: clusterDeploymentName
   params: {
     env: env
-    location: location
-    tags: tags
+    clusterResourceGroup: applicationRG.name
     acrPrivateEndpointSubnetId: '${spokeVnet.id}/subnets/${acrPrivateEndpointSubnetName}'
     acrPrivateDnsZoneId: acrDnsZone.id
   }
