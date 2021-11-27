@@ -28,6 +28,13 @@ param softDeleteRetentionInDays int = 7
 @description('Azure Active Directory tenant ID that should be used for authenticating requests to the key vault')
 param tenantId string = subscription().tenantId
 
+@description('Property to specify whether the vault will accept traffic from public internet')
+@allowed([
+  'Disabled'
+  ''
+])
+param publicNetworkAccess string = ''
+
 @description('Aazure Key Vault network acls')
 @metadata({
   bypass: 'Azure traffic that can bypass network rules. This can be AzureServices or None, default AzureServices'
@@ -136,7 +143,7 @@ resource keyvault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
     enableSoftDelete: enableSoftDelete
     networkAcls: networkAcls
     accessPolicies: accessPolicies
-    // publicNetworkAccess: 'string'
+    publicNetworkAccess: publicNetworkAccess
     sku: {
       family: 'A'
       name: skuName

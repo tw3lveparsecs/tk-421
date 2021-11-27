@@ -1,18 +1,20 @@
 /* ToDo:
     Add Network ACLs
+    Add Private Endpoints
+    Add Private DNS Zones
     Add Log Analytics integration
     Add Resource Locks
 */
 targetScope = 'subscription'
 
 @description('Airport location code or alternative short location description')
-param primaryLocationCode string = 'mel'
+param primaryLocationCode string = 'syd'
 
 @description('Deployment environment')
 param env string = 'dev'
 
 @description('Azure resource location')
-param location string = 'australiasoutheast'
+param location string = 'australiaeast'
 
 @description('Object containing tags')
 param tags object = {
@@ -100,6 +102,7 @@ module keyVault '../../../modules/security/keyvault/keyvault.bicep' = {
     skuName: 'standard'
     softDeleteRetentionInDays: 7
     tenantId: subscription().tenantId
+    publicNetworkAccess: ''
     networkAcls: networkAcls
     accessPolicies: accessPolicies
   }
