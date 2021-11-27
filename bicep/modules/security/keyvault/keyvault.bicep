@@ -28,6 +28,24 @@ param softDeleteRetentionInDays int = 7
 @description('Azure Active Directory tenant ID that should be used for authenticating requests to the key vault')
 param tenantId string = subscription().tenantId
 
+@description('Aazure Key Vault network acls')
+@metadata({
+  bypass: 'Azure traffic that can bypass network rules. This can be AzureServices or None, default AzureServices'
+  defaultAction: 'The default action when no rule from ipRules and from virtualNetworkRules match Deny or Allow'
+  ipRules: [
+    {
+      value: 'An IPv4 address range in CIDR notation, such as 124.56.78.91 (simple IP address) or 124.56.78.0/24 (cidr)'
+    }
+  ]
+  virtualNetworkRules: [
+    {
+      id: 'Full resourceId of a vnet subnet, such as /subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1'
+      ignoreMissingVnetServiceEndpoint: 'Property to specify whether NRP will ignore the check if parent subnet has serviceEndpoints configured, value: true or false'
+    }
+  ]
+})
+param networkAcls object = {}
+
 @description('Aazure Key Vault Access Policies')
 @metadata({
   applicationId: 'Application ID of the client making request on behalf of a principal cannot be used with - objectId'
@@ -104,7 +122,7 @@ param tenantId string = subscription().tenantId
       'update'
     ]
   }
-  tenantId: 'string'
+  tenantId: 'Azure Active Directory tenant ID that should be used for authenticating requests to the key vault'
 })
 param accessPolicies array = []
 
@@ -116,7 +134,7 @@ resource keyvault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
     enabledForDiskEncryption: enabledForDiskEncryption
     enabledForTemplateDeployment: enabledForTemplateDeployment
     enableSoftDelete: enableSoftDelete
-    networkAcls: {}
+    networkAcls: networkAcls
     accessPolicies: accessPolicies
     // publicNetworkAccess: 'string'
     sku: {
@@ -127,9 +145,6 @@ resource keyvault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
     tenantId: tenantId
   }
 }
-
-// resource keyvaultNetworkAcls
-
 
 output name string = keyvault.name
 output id string = keyvault.id

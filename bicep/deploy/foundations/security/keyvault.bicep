@@ -35,9 +35,58 @@ resource keyvaultHubRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 Key Vault
 ======================================================================*/
 
-var coreKeyVaultName = '${env}-${primaryLocationCode}-core-kv'
-
 param coreKvDeploymentName string = 'keyvault${utcNow()}'
+
+var coreKeyVaultName = '${env}-${primaryLocationCode}-core-kv'
+var networkAcls = {
+  bypass: 'AzureServices'
+  defaultAction: 'Deny'
+  ipRules: []
+  virtualNetworkRules: []
+}
+var accessPolicies = [
+  {
+    // applicationId: ''
+    objectId: '9b039a4f-a509-4836-a097-b9e41a293a9c'
+    permissions: {
+      certificates: []
+      keys: []
+      secrets: [
+        'backup'
+        'delete'
+        'get'
+        'list'
+        'purge'
+        'recover'
+        'restore'
+        'set'
+      ]
+      storage: []
+    }
+    tenantId: subscription().tenantId
+  }
+  {
+    // applicationId: ''
+    objectId: '07e0729e-efad-4773-91df-5c67b605814c'
+    permissions: {
+      certificates: []
+      keys: []
+      secrets: [
+        'backup'
+        'delete'
+        'get'
+        'list'
+        'purge'
+        'recover'
+        'restore'
+        'set'
+      ]
+      storage: []
+    }
+    tenantId: subscription().tenantId
+  }
+]
+
 
 module keyVault '../../../modules/security/keyvault/keyvault.bicep' = {
   name: coreKvDeploymentName
@@ -51,48 +100,8 @@ module keyVault '../../../modules/security/keyvault/keyvault.bicep' = {
     skuName: 'standard'
     softDeleteRetentionInDays: 7
     tenantId: subscription().tenantId
-    accessPolicies: [
-      {
-        // applicationId: ''
-        objectId: '9b039a4f-a509-4836-a097-b9e41a293a9c'
-        permissions: {
-          certificates: []
-          keys: []
-          secrets: [
-            'backup'
-            'delete'
-            'get'
-            'list'
-            'purge'
-            'recover'
-            'restore'
-            'set'
-          ]
-          storage: []
-        }
-        tenantId: subscription().tenantId
-      }
-      {
-        // applicationId: ''
-        objectId: '07e0729e-efad-4773-91df-5c67b605814c'
-        permissions: {
-          certificates: []
-          keys: []
-          secrets: [
-            'backup'
-            'delete'
-            'get'
-            'list'
-            'purge'
-            'recover'
-            'restore'
-            'set'
-          ]
-          storage: []
-        }
-        tenantId: subscription().tenantId
-      }
-    ]
+    networkAcls: networkAcls
+    accessPolicies: accessPolicies
   }
 }
 
