@@ -1,16 +1,10 @@
-/*
-TODO
-- update param desc with metadata and desc/spell check
-- test deployment types
-- add readme with examples
-*/
-@description('Application gateway network name.')
+@description('Application gateway name')
 param applicationGatewayName string
 
-@description('Application gateway location.')
+@description('Application gateway location')
 param location string = resourceGroup().location
 
-@description('Application gateway tier.')
+@description('Application gateway tier')
 @allowed([
   'Standard'
   'WAF'
@@ -19,7 +13,7 @@ param location string = resourceGroup().location
 ])
 param tier string
 
-@description('Application gateway SKU.')
+@description('Application gateway sku')
 @allowed([
   'Standard_Small'
   'Standard_Medium'
@@ -31,74 +25,187 @@ param tier string
 ])
 param sku string
 
-@description('Enables HTTP/2 support')
+@description('Enable HTTP/2 support')
 param http2Enabled bool = true
 
-@description('Capacity (instance count) of application gateway.')
+@description('Capacity (instance count) of application gateway')
 @minValue(1)
 @maxValue(32)
-param capacity int
+param capacity int = 2
 
-@description('Capacity (instance count) of application gateway.')
+@description('Autoscale capacity (instance count) of application gateway')
 @minValue(1)
 @maxValue(32)
-param autoScaleMaxCapacity int
+param autoScaleMaxCapacity int = 10
 
-@description('Public ip address name.')
+@description('Public ip address name')
 param publicIpAddressName string
 
-@description('Virutal network name.')
-param vnetResourceId string
+@description('Virutal network subscription id')
+param vNetSubscriptionId string = subscription().subscriptionId
 
-@description('Application gateway subnet name.')
+@description('Virutal network resource group')
+param vNetResourceGroup string
+
+@description('Virutal network name')
+param vNetName string
+
+@description('Application gateway subnet name')
 param subnetName string
 
-@description('Array containing the ssl certificates.')
-param sslCertificates array
+@description('Array containing ssl certificates')
+@metadata({
+  name: 'Certificate name'
+  keyVaultResourceId: 'Key vault resource id'
+  secretName: 'Secret name'
+})
+param sslCertificates array = []
 
-@description('Array containing the trusted root certificates.')
-param trustedRootCertificates array
+@description('Array containing trusted root certificates')
+@metadata({
+  name: 'Certificate name'
+  keyVaultResourceId: 'Key vault resource id'
+  secretName: 'Secret name'
+})
+param trustedRootCertificates array = []
 
-@description('Array containing the http listeners.')
+@description('Array containing http listeners')
+@metadata({
+  name: 'Listener name'
+  protocol: 'Listener protocol'
+  port: 'integer containing port number'
+  frontEndPort: 'Front end port name'
+  sslCertificate: 'SSL certificate name' // only required for https listeners
+  hostNames: 'Array containing host names'
+  firewallPolicy: 'Enabled/Disabled. Configures firewall policy on listener'
+})
 param httpListeners array
 
-@description('Array containing the backend address pools.')
-param backendAddressPools array
+@description('Array containing backend address pools')
+@metadata({
+  name: 'Backend address pool name'
+  backendAddresses: 'Array containing backend addresses'
+})
+param backendAddressPools array = []
 
-@description('Array containing the backend http settings.')
-param backendHttpSettings array
+@description('Array containing backend http settings')
+@metadata({
+  name: 'Backend http setting name'
+  port: 'integer containing port number'
+  protocol: 'Backend http setting protocol'
+  cookieBasedAffinity: 'Enabled/Disabled. Configures cookie based affinity.'
+  requestTimeout: 'Integer containing backend http setting request timeout'
+  connectionDraining: {
+    drainTimeoutInSec: 'Integer containing connection drain timeout in seconds'
+    enabled: 'Bool to enable connection draining'
+  }
+  trustedRootCertificate: 'Trusted root certificate name'
+  hostName: 'Backend http setting host name'
+  probeName: 'Custom probe name'
+})
+param backendHttpSettings array = []
 
-@description('Array containing the routing rules.')
+@description('Array containing request routing rules')
+@metadata({
+  name: 'Rule name'
+  ruleType: 'Rule type'
+  listener: 'Http listener name'
+  backendPool: 'Backend pool name'
+  backendHttpSettings: 'Backend http setting name'
+  redirectConfiguration: 'Redirection configuration name'
+})
 param rules array
 
-@description('Array containing the rules redirect configurations.')
-param redirectConfigurations array
+@description('Array containing redirect configurations')
+@metadata({
+  name: 'Redirecton name'
+  redirectType: 'Redirect type'
+  targetUrl: 'Target URL'
+  includePath: 'Bool to include path'
+  includeQueryString: 'Bool to include query string'
+  requestRoutingRule: 'Name of request routing rule to associate redirection configuration'
+})
+param redirectConfigurations array = []
 
-@description('Array containing the front end ports.')
+@description('Array containing front end ports')
+@metadata({
+  name: 'Front port name'
+  port: 'Integer containing port number'
+})
 param frontEndPorts array
 
-@description('Array containing the custom probes.')
-param customProbes array
+@description('Array containing custom probes')
+@metadata({
+  name: 'Custom probe name'
+  protocol: 'Custom probe protocol'
+  host: 'Host name'
+  path: 'Probe path'
+  interval: 'Integer containing probe interval'
+  timeout: 'Integer containing probe timeout'
+  unhealthyThreshold: 'Integer containing probe unhealthy threshold'
+  pickHostNameFromBackendHttpSettings: 'Bool to enable pick host name from backend settings'
+  minServers: 'Integer containing min servers'
+  match: {
+    statusCodes: [
+      'Custom probe status codes'
+    ]
+  }
+})
+param customProbes array = []
 
-@description('Resource Id of an User assigned managed identity which will be associated with the App Gateway.')
+@description('Resource id of an existing user assigned managed identity to associate with the application gateway')
 param managedIdentityResourceId string = ''
 
-@description('Enables web application firewall')
+@description('Enable web application firewall')
 param enableWebApplicationFirewall bool = false
 
 @description('Name of the firewall policy. Only required if enableWebApplicationFirewall is set to true')
-param firewallPolicyName string
+param firewallPolicyName string = ''
 
 @description('Array containing the firewall policy settings. Only required if enableWebApplicationFirewall is set to true')
-param firewallPolicySettings object = {}
+@metadata({
+  requestBodyCheck: 'Bool to enable request body check'
+  maxRequestBodySizeInKb: 'Integer containing max request body size in kb'
+  fileUploadLimitInMb: 'Integer containing file upload limit in mb'
+  state: 'Enabled/Disabled. Configures firewall policy settings'
+  mode: 'Sets the detection mode'
+})
+param firewallPolicySettings object = {
+  requestBodyCheck: true
+  maxRequestBodySizeInKb: 128
+  fileUploadLimitInMb: 100
+  state: 'Enabled'
+  mode: 'Detection'
+}
 
 @description('Array containing the firewall policy custom rules. Only required if enableWebApplicationFirewall is set to true')
+@metadata({
+  action: 'Type of actions'
+  matchConditions: 'Array containing match conditions'
+  name: 'Custom rule name'
+  priority: 'Integer containing priority'
+  ruleType: 'Rule type'
+})
 param firewallPolicyCustomRules array = []
 
 @description('Array containing the firewall policy managed rule sets. Only required if enableWebApplicationFirewall is set to true')
-param firewallPolicyManagedRuleSets array = []
+@metadata({
+  ruleSetType: 'Rule set type'
+  ruleSetVersion: 'Rule set version'
+})
+param firewallPolicyManagedRuleSets array = [
+  {
+    ruleSetType: 'OWASP'
+    ruleSetVersion: '3.0'
+  }
+]
 
 @description('Array containing the firewall policy managed rule exclusions. Only required if enableWebApplicationFirewall is set to true')
+@metadata({
+  matchVariable: 'Variable to be excluded'
+  selector: 'String specifying exclusions'
+  selectorMatchOperator: 'Exclusion operator'
+})
 param firewallPolicyManagedRuleExclusions array = []
 
 @description('Enable delete lock')
@@ -107,10 +214,10 @@ param enableDeleteLock bool = false
 @description('Enable diagnostic logs')
 param enableDiagnostics bool = false
 
-@description('Storage account resource id. Only required if enableDiagnostics is set to true.')
+@description('Storage account resource id. Only required if enableDiagnostics is set to true')
 param diagnosticStorageAccountId string = ''
 
-@description('Log analytics workspace resource id. Only required if enableDiagnostics is set to true.')
+@description('Log analytics workspace resource id. Only required if enableDiagnostics is set to true')
 param logAnalyticsWorkspaceId string = ''
 
 var publicIpLockName = '${publicIpAddress.name}-lck'
@@ -198,7 +305,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
         name: gatewayIpConfigurationName
         properties: {
           subnet: {
-            id: resourceId(vnetResourceId, '/subnets', subnetName)
+            id: resourceId(vNetSubscriptionId, vNetResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', vNetName, subnetName)
           }
         }
       }
@@ -213,22 +320,45 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
         }
       }
     ]
-    frontendPorts: frontEndPorts
-    probes: customProbes
-    backendAddressPools: backendAddressPools
+    frontendPorts: [for frontEndPort in frontEndPorts: {
+      name: frontEndPort.name
+      properties: {
+        port: frontEndPort.port
+      }
+    }]
+    probes: [for probe in customProbes: {
+      name: probe.name
+      properties: {
+        protocol: probe.protocol
+        host: probe.host
+        path: probe.path
+        interval: probe.interval
+        timeout: probe.timeout
+        unhealthyThreshold: probe.unhealthyThreshold
+        pickHostNameFromBackendHttpSettings: probe.pickHostNameFromBackendHttpSettings
+        minServers: probe.minServers
+        match: probe.match
+      }
+    }]
+    backendAddressPools: [for backendAddressPool in backendAddressPools: {
+      name: backendAddressPool.name
+      properties: {
+        backendAddresses: backendAddressPool.backendAddresses
+      }
+    }]
     firewallPolicy: enableWebApplicationFirewall ? {
       id: firewallPolicy.id
     } : null
     trustedRootCertificates: [for trustedRootCertificate in trustedRootCertificates: {
       name: trustedRootCertificate.name
       properties: {
-        keyVaultSecretId: contains(trustedRootCertificate, 'subscriptionId') ? '${reference(resourceId(trustedRootCertificate.subscriptionId, 'Microsoft.KeyVault/vaults', trustedRootCertificate.keyVaultName), '2021-10-01').vaultUri}secrets/${trustedRootCertificate.secretName}' : '${reference(resourceId('Microsoft.KeyVault/vaults', trustedRootCertificate.keyVaultName), '2021-10-01').vaultUri}secrets/${trustedRootCertificate.secretName}'
+        keyVaultSecretId: '${reference(trustedRootCertificate.keyVaultResourceId, '2021-10-01').vaultUri}secrets/${trustedRootCertificate.secretName}'
       }
     }]
     sslCertificates: [for sslCertificate in sslCertificates: {
       name: sslCertificate.name
       properties: {
-        keyVaultSecretId: contains(sslCertificate, 'subscriptionId') ? '${reference(resourceId(sslCertificate.subscriptionId, 'Microsoft.KeyVault/vaults', sslCertificate.keyVaultName), '2021-10-01').vaultUri}secrets/${sslCertificate.secretName}' : '${reference(resourceId('Microsoft.KeyVault/vaults', sslCertificate.keyVaultName), '2021-10-01').vaultUri}secrets/${sslCertificate.secretName}'
+        keyVaultSecretId: '${reference(sslCertificate.keyVaultResourceId, '2021-10-01').vaultUri}secrets/${sslCertificate.secretName}'
       }
     }]
     backendHttpSettingsCollection: [for backendHttpSetting in backendHttpSettings: {
@@ -243,6 +373,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
         probe: contains(backendHttpSetting, 'probeName') ? json('{"id": "${resourceId('Microsoft.Network/applicationGateways/probes', applicationGatewayName, backendHttpSetting.probeName)}"}') : null
         trustedRootCertificates: contains(backendHttpSetting, 'trustedRootCertificate') ? json('[{"id": "${resourceId('Microsoft.Network/applicationGateways/trustedRootCertificates', applicationGatewayName, backendHttpSetting.trustedRootCertificate)}"}]') : null
         hostName: contains(backendHttpSetting, 'hostName') ? backendHttpSetting.hostName : null
+        pickHostNameFromBackendAddress: contains(backendHttpSetting, 'pickHostNameFromBackendAddress') ? backendHttpSetting.pickHostNameFromBackendAddress : false
       }
     }]
     httpListeners: [for httpListener in httpListeners: {
@@ -328,7 +459,7 @@ resource applicationGatewayLock 'Microsoft.Authorization/locks@2017-04-01' = if 
 }
 
 resource firewallPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2021-03-01' = if (enableWebApplicationFirewall) {
-  name: firewallPolicyName
+  name: firewallPolicyName == '' ? 'placeholdervalue' : firewallPolicyName // placeholder value required as name cannot be empty/null when enableWebApplicationFirewall equals false 
   location: location
   properties: {
     customRules: firewallPolicyCustomRules
