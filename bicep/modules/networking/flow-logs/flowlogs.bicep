@@ -42,3 +42,6 @@ resource nsgFlowLog 'Microsoft.Network/networkWatchers/flowLogs@2021-02-01' = {
     targetResourceId: nsgId
   }
 }
+
+output name string = nsgFlowLog.name
+output id string = nsgFlowLog.id

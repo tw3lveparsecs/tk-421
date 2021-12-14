@@ -37,6 +37,7 @@ module networking 'networking/networking.bicep' = {
     location: location
     primaryLocationCode: primaryLocationCode
     flowLogsStorageId: monitoring.outputs.flowlogsStorageId
+    diagnosticLogsStorageId: monitoring.outputs.diaglogsStorageId
     logAnalyticsWorkspaceId: monitoring.outputs.logAnalyticsId
     tags: tags
   }

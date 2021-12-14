@@ -37,3 +37,6 @@ resource role 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
     roleDefinitionId: builtinRole == 'Owner' ? roleDefinitions.owner.id : builtinRole == 'Contributor' ? roleDefinitions.contributor.id : builtinRole == 'Reader' ? roleDefinitions.reader.id : roleDefinitionId
   }
 }
+
+output name string = role.name
+output id string = role.id

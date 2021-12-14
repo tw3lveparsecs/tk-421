@@ -17,6 +17,9 @@ param logAnalyticsWorkspaceId string
 
 @description('Flow logs storage account resource id')
 param flowLogsStorageId string
+
+@description('Diagnostic logs storage account resource id')
+param diagnosticLogsStorageId string
 /*======================================================================
 RESOURCE GROUPS
 ======================================================================*/
@@ -563,5 +566,147 @@ module kvPrivateDnsZone '../../../modules/networking/private-dns-zone/private-dn
     privateDnsZoneName: kvPrivateDnsName
     enableVnetLink: true
     vnetResourceId: vnetHub.outputs.id
+  }
+}
+/*======================================================================
+MANAGED IDENTITY
+======================================================================*/
+param userIdentityDeploymentName string = 'umi${utcNow()}'
+
+var managedIdentityName = '${appGwName}-umi'
+
+module appGwIdentity '../../../modules/identity/managed-identity/usermanagedidentity.bicep' = {
+  name: userIdentityDeploymentName
+  scope: resourceGroup(networkHubRG.name)
+  params: {
+    managedIdentityName: managedIdentityName
+  }
+}
+/*======================================================================
+APPLICATION GATEWAY
+======================================================================*/
+param appGwDeploymentName string = 'appGw${utcNow()}'
+
+var appGwName = '${env}-${primaryLocationCode}-hub-agw'
+var appGwSettings = {
+  sku: 'WAF_v2'
+  tier: 'WAF_v2'
+  enableWebApplicationFirewall: true
+  firewallPolicyName: '${appGwName}-pol'
+  publicIpAddressName: '${appGwName}-pip'
+  vNetResourceGroup: networkHubRG.name
+  vNetName: vnetHub.outputs.name
+  subnetName: 'AzureWAFSubnet'
+  managedIdentityResourceId: appGwIdentity.outputs.id
+}
+var appGwCertificates = {
+  // to be updated with key vault details once module has been added
+  sslCertificates: [
+    {
+      name: 'MySslCertName'
+      keyVaultResourceId: 'MyKeyVaultResourceId'
+      secretName: 'MySecretName'
+    }
+  ]
+  trustedRootCertificates: [
+    {
+      name: 'MyTrustedRootCertName'
+      keyVaultResourceId: 'MyKeyVaultResourceId'
+      secretName: 'MySecretName'
+    }
+  ]
+}
+var appGwCustomProbes = [
+  {
+    name: '${env}-https-aksbaseline-prb'
+    protocol: 'Https'
+    path: '/favicon.ico'
+    interval: 30
+    timeout: 30
+    unhealthyThreshold: 3
+    pickHostNameFromBackendHttpSettings: true
+    minServers: 0
+    match: {}
+  }
+]
+var appGwFrontEndPorts = [
+  {
+    name: 'port_443'
+    port: 443
+  }
+]
+var appGwHttpListeners = [
+  {
+    name: '${env}-https-443-lst'
+    protocol: 'Https'
+    port: 443
+    frontEndPort: 'port_443'
+    sslCertificate: 'MySslCertName' // update with cert name once key vault added
+    hostName: ''
+    firewallPolicy: 'Enabled'
+    requireServerNameIndication: true
+  }
+]
+var appGwBackendAddressPools = [
+  {
+    name: '${env}-aksbaseline-bpl'
+    backendAddresses: [
+      {
+        fqdn: 'aksbaseline.tk421.com'
+      }
+    ]
+  }
+]
+var appGwBackendHttpSettings = [
+  {
+    name: '${env}-aksbaseline-bes'
+    port: 443
+    protocol: 'Https'
+    cookieBasedAffinity: 'Disabled'
+    requestTimeout: 20
+    connectionDraining: {
+      drainTimeoutInSec: 60
+      enabled: true
+    }
+    trustedRootCertificate: 'MyTrustedRootCertName' // update with cert name once key vault added
+    pickHostNameFromBackendAddress: true
+    probeName: appGwCustomProbes[0].name
+  }
+]
+var appGwRules = [
+  {
+    name: '${env}-https-443-aksbaseline-rle"'
+    ruleType: 'Basic'
+    listener: appGwHttpListeners[0].name
+    backendPool: appGwBackendAddressPools[0].name
+    backendHttpSettings: appGwBackendHttpSettings[0].name
+  }
+]
+
+module appGateway '../../../modules/networking/application-gateway/applicationgateway.bicep' = {
+  name: appGwDeploymentName
+  scope: resourceGroup(networkHubRG.name)
+  params: {
+    applicationGatewayName: appGwName
+    sku: appGwSettings.sku
+    tier: appGwSettings.tier
+    enableWebApplicationFirewall: appGwSettings.enableWebApplicationFirewall
+    firewallPolicyName: appGwSettings.firewallPolicyName
+    publicIpAddressName: appGwSettings.publicIpAddressName
+    vNetResourceGroup: appGwSettings.vNetResourceGroup
+    vNetName: appGwSettings.vNetName
+    subnetName: appGwSettings.subnetName
+    managedIdentityResourceId: appGwSettings.managedIdentityResourceId
+    sslCertificates: appGwCertificates.sslCertificates
+    trustedRootCertificates: appGwCertificates.trustedRootCertificates
+    customProbes: appGwCustomProbes
+    frontEndPorts: appGwFrontEndPorts
+    httpListeners: appGwHttpListeners
+    backendAddressPools: appGwBackendAddressPools
+    backendHttpSettings: appGwBackendHttpSettings
+    rules: appGwRules
+    enableDiagnostics: true
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    diagnosticStorageAccountId: diagnosticLogsStorageId
   }
 }
