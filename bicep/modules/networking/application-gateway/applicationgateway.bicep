@@ -188,7 +188,7 @@ param firewallPolicySettings object = {
 })
 param firewallPolicyCustomRules array = []
 
-@description('Array containing the firewall policy managed rule sets. Only required if enableWebApplicationFirewall is set to true')
+@description('Array containing the firewall policy managed rule set. Only required if enableWebApplicationFirewall is set to true')
 @metadata({
   ruleSetType: 'Rule set type'
   ruleSetVersion: 'Rule set version'
@@ -196,7 +196,7 @@ param firewallPolicyCustomRules array = []
 param firewallPolicyManagedRuleSets array = [
   {
     ruleSetType: 'OWASP'
-    ruleSetVersion: '3.0'
+    ruleSetVersion: '3.2'
   }
 ]
 
@@ -295,10 +295,10 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
     }
     enableHttp2: http2Enabled
     webApplicationFirewallConfiguration: enableWebApplicationFirewall ? {
-      enabled: true
-      firewallMode: 'Detection'
+      enabled: firewallPolicySettings.state == 'Enabled' ? true : false
+      firewallMode: firewallPolicySettings.mode
       ruleSetType: 'OWASP'
-      ruleSetVersion: '3.0'
+      ruleSetVersion: '3.2'
     } : null
     gatewayIPConfigurations: [
       {

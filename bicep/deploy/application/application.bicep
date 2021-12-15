@@ -9,43 +9,43 @@ var env = 'dev'
 var tags = {
   project: 'tk-421'
   environment: env
-  application: 'straight-shooter'
+  application: 'aksbaseline'
 }
-var appName = 'straightshooter'
+var appName = 'aksbaseline'
 /*======================================================================
 RESOURCE GROUPS
 ======================================================================*/
-var appMonitorResourceGroup = '${env}-spoke-monitoring2-rgp'
-var appResourceGroup = '${env}-spoke-straightshooter2-rgp'
+// var appMonitorResourceGroup = '${env}-spoke-monitoring2-rgp'
+// var appResourceGroup = '${env}-spoke-straightshooter2-rgp'
 
-resource appMonitorRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: appMonitorResourceGroup
-  location: location
-  tags: tags
-}
+// resource appMonitorRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+//   name: appMonitorResourceGroup
+//   location: location
+//   tags: tags
+// }
 
-resource applicationRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: appResourceGroup
-  location: location
-  tags: tags
-}
+// resource applicationRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+//   name: appResourceGroup
+//   location: location
+//   tags: tags
+// }
 
 /*======================================================================
 MONITORING
 ======================================================================*/
-param monitorDeploymentName string = 'monitoring${utcNow()}'
+// param monitorDeploymentName string = 'monitoring${utcNow()}'
 
-module monitoring 'monitoring/monitoring.bicep' = {
-  name: monitorDeploymentName
-  params: {
-    env: env
-    orgShortName: orgShortName
-    primaryLocationCode: primaryLocationCode
-    appName: appName
-    monitorResourceGroup: appMonitorRG.name
-    clusterResourceGroup: applicationRG.name
-  }
-}
+// module monitoring 'monitoring/monitoring.bicep' = {
+//   name: monitorDeploymentName
+//   params: {
+//     env: env
+//     orgShortName: orgShortName
+//     primaryLocationCode: primaryLocationCode
+//     appName: appName
+//     monitorResourceGroup: appMonitorRG.name
+//     clusterResourceGroup: applicationRG.name
+//   }
+// }
 /*======================================================================
 CLUSTER
 ======================================================================*/
@@ -55,25 +55,81 @@ var spokeVnetResourceGroup = '${env}-spoke-network-rgp'
 var spokeVnetName = '${env}-${primaryLocationCode}-straightshooter-vnw'
 var acrPrivateEndpointSubnetName = 'AksNodes'
 var acrDnsZoneName = 'privatelink.azurecr.io'
-var acrDnsZoneResourceGroup = '${env}-hub-network-rgp'
+var hubNetworkResourceGroup = '${env}-hub-network-rgp'
 var hubSubscription = subscription().subscriptionId // replace with hub subscription id if hub exists in a different subscription to spoke
 
-resource spokeVnet 'Microsoft.Network/virtualNetworks@2021-02-01' existing = {
-  name: spokeVnetName
-  scope: resourceGroup(spokeVnetResourceGroup)
+// resource spokeVnet 'Microsoft.Network/virtualNetworks@2021-02-01' existing = {
+//   name: spokeVnetName
+//   scope: resourceGroup(spokeVnetResourceGroup)
+// }
+
+// resource acrDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' existing = {
+//   name: acrDnsZoneName
+//   scope: resourceGroup(hubSubscription, hubNetworkResourceGroup)
+// }
+
+// module cluster 'cluster/cluster.bicep' = {
+//   name: clusterDeploymentName
+//   params: {
+//     env: env
+//     clusterResourceGroup: applicationRG.name
+//     acrPrivateEndpointSubnetId: '${spokeVnet.id}/subnets/${acrPrivateEndpointSubnetName}'
+//     acrPrivateDnsZoneId: acrDnsZone.id
+//   }
+// }
+
+/*======================================================================
+NETWORKING
+======================================================================*/
+param networkingDeploymentName string = 'appnetworking${utcNow()}'
+
+var appGwName = '${env}-${primaryLocationCode}-hub-agw'
+var appGwManagedIdentityName = '${appGwName}-umi'
+
+resource appGw 'Microsoft.Network/applicationGateways@2021-03-01' existing = {
+  name: appGwName
+  scope: resourceGroup(hubSubscription, hubNetworkResourceGroup)
 }
 
-resource acrDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' existing = {
-  name: acrDnsZoneName
-  scope: resourceGroup(hubSubscription, acrDnsZoneResourceGroup)
+resource appGwManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' existing = {
+  name: appGwManagedIdentityName
+  scope: resourceGroup(hubSubscription, hubNetworkResourceGroup)
 }
 
-module cluster 'cluster/cluster.bicep' = {
-  name: clusterDeploymentName
+module networking 'networking/networking.bicep' = {
+  name: networkingDeploymentName
   params: {
     env: env
-    clusterResourceGroup: applicationRG.name
-    acrPrivateEndpointSubnetId: '${spokeVnet.id}/subnets/${acrPrivateEndpointSubnetName}'
-    acrPrivateDnsZoneId: acrDnsZone.id
+    appGwName: appGw.name
+    appGwResourceGroup: hubNetworkResourceGroup
+    hubSubscriptionId: hubSubscription
+    appGwSettings: {
+      sku: appGw.properties.sku.name
+      tier: appGw.properties.sku.tier
+      enableWebApplicationFirewall: appGw.properties.webApplicationFirewallConfiguration.enabled
+      firewallPolicyName: split(appGw.properties.firewallPolicy.id, '/')[8]
+      publicIpAddressName: split(appGw.properties.frontendIPConfigurations[0].properties.publicIPAddress.id, '/')[8]
+      vNetSubscriptionId: split(appGw.properties.gatewayIPConfigurations[0].properties.subnet.id, '/')[2]
+      vNetResourceGroup: split(appGw.properties.gatewayIPConfigurations[0].properties.subnet.id, '/')[4]
+      vNetName: split(appGw.properties.gatewayIPConfigurations[0].properties.subnet.id, '/')[8]
+      subnetName: split(appGw.properties.gatewayIPConfigurations[0].properties.subnet.id, '/')[10]
+      managedIdentityResourceId: appGwManagedIdentity.id
+    }
+    appGwCertificates: {
+      sslCertificates: [
+        {
+          name: 'aksbaselinessl'
+          keyVaultResourceId: '/subscriptions/200ef0b6-6c4f-4c21-a331-f8301096bac9/resourceGroups/dev-hub-security-rgp/providers/Microsoft.KeyVault/vaults/dev-hub-core-kvt'
+          secretName: 'tk421Public'
+        }
+      ]
+      trustedRootCertificates: [
+        {
+          name: 'aksbaselineingress'
+          keyVaultResourceId: '/subscriptions/200ef0b6-6c4f-4c21-a331-f8301096bac9/resourceGroups/dev-hub-security-rgp/providers/Microsoft.KeyVault/vaults/dev-hub-core-kvt'
+          secretName: 'tk421Ingress'
+        }
+      ]
+    }
   }
 }

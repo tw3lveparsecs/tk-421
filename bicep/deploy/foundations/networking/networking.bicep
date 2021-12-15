@@ -456,7 +456,7 @@ var vnetHubSubnets = [
     nsgId: appGwNsg.outputs.id
   }
 ]
-var vnetSpokeName = '${env}-${primaryLocationCode}-straightshooter-vnw'
+var vnetSpokeName = '${env}-${primaryLocationCode}-aksbaseline-vnw'
 var vnetSpokeAddressSpace = [
   '10.24.0.0/16'
 ]
@@ -599,87 +599,64 @@ var appGwSettings = {
   subnetName: 'AzureWAFSubnet'
   managedIdentityResourceId: appGwIdentity.outputs.id
 }
-var appGwCertificates = {
-  // to be updated with key vault details once module has been added
-  sslCertificates: [
-    {
-      name: 'MySslCertName'
-      keyVaultResourceId: 'MyKeyVaultResourceId'
-      secretName: 'MySecretName'
-    }
-  ]
-  trustedRootCertificates: [
-    {
-      name: 'MyTrustedRootCertName'
-      keyVaultResourceId: 'MyKeyVaultResourceId'
-      secretName: 'MySecretName'
-    }
-  ]
-}
-var appGwCustomProbes = [
-  {
-    name: '${env}-https-aksbaseline-prb'
-    protocol: 'Https'
-    path: '/favicon.ico'
-    interval: 30
-    timeout: 30
-    unhealthyThreshold: 3
-    pickHostNameFromBackendHttpSettings: true
-    minServers: 0
-    match: {}
-  }
-]
 var appGwFrontEndPorts = [
   {
-    name: 'port_443'
-    port: 443
+    name: 'port_80'
+    port: 80
   }
 ]
 var appGwHttpListeners = [
   {
-    name: '${env}-https-443-lst'
-    protocol: 'Https'
-    port: 443
-    frontEndPort: 'port_443'
-    sslCertificate: 'MySslCertName' // update with cert name once key vault added
-    hostName: ''
-    firewallPolicy: 'Enabled'
-    requireServerNameIndication: true
+    name: '${env}-http-80-lst'
+    protocol: 'Http'
+    port: 80
+    frontEndPort: 'port_80'
   }
 ]
 var appGwBackendAddressPools = [
   {
-    name: '${env}-aksbaseline-bpl'
+    name: '${env}-temp-bpl'
     backendAddresses: [
       {
-        fqdn: 'aksbaseline.tk421.com'
+        ipAddress: '10.1.2.3'
       }
     ]
   }
 ]
 var appGwBackendHttpSettings = [
   {
-    name: '${env}-aksbaseline-bes'
-    port: 443
-    protocol: 'Https'
-    cookieBasedAffinity: 'Disabled'
-    requestTimeout: 20
+    name: '${env}-temp-bes'
+    port: 80
+    protocol: 'Http'
+    cookieBasedAffinity: 'Enabled'
+    affinityCookieName: 'MyCookieAffinityName'
+    requestTimeout: 300
     connectionDraining: {
       drainTimeoutInSec: 60
       enabled: true
     }
-    trustedRootCertificate: 'MyTrustedRootCertName' // update with cert name once key vault added
-    pickHostNameFromBackendAddress: true
-    probeName: appGwCustomProbes[0].name
   }
 ]
 var appGwRules = [
   {
-    name: '${env}-https-443-aksbaseline-rle"'
+    name: '${env}-http-80-temp-rle'
     ruleType: 'Basic'
     listener: appGwHttpListeners[0].name
     backendPool: appGwBackendAddressPools[0].name
     backendHttpSettings: appGwBackendHttpSettings[0].name
+  }
+]
+var appGwFirewallPolicySettings = {
+  requestBodyCheck: true
+  maxRequestBodySizeInKb: 128
+  fileUploadLimitInMb: 100
+  state: 'Enabled'
+  mode: 'Prevention'
+}
+var appGwFirewallPolicyManagedRuleSets = [
+  {
+    ruleSetType: 'OWASP'
+    ruleSetVersion: '3.2'
   }
 ]
 
@@ -697,9 +674,6 @@ module appGateway '../../../modules/networking/application-gateway/applicationga
     vNetName: appGwSettings.vNetName
     subnetName: appGwSettings.subnetName
     managedIdentityResourceId: appGwSettings.managedIdentityResourceId
-    sslCertificates: appGwCertificates.sslCertificates
-    trustedRootCertificates: appGwCertificates.trustedRootCertificates
-    customProbes: appGwCustomProbes
     frontEndPorts: appGwFrontEndPorts
     httpListeners: appGwHttpListeners
     backendAddressPools: appGwBackendAddressPools
@@ -708,5 +682,7 @@ module appGateway '../../../modules/networking/application-gateway/applicationga
     enableDiagnostics: true
     logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
     diagnosticStorageAccountId: diagnosticLogsStorageId
+    firewallPolicySettings: appGwFirewallPolicySettings
+    firewallPolicyManagedRuleSets: appGwFirewallPolicyManagedRuleSets
   }
 }
