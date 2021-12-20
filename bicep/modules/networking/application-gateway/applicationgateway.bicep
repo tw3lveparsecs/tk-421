@@ -246,15 +246,7 @@ resource publicIpAddressDiagnostics 'microsoft.insights/diagnosticSettings@2021-
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
     logs: [
       {
-        category: 'DDoSProtectionNotifications'
-        enabled: true
-      }
-      {
-        category: 'DDoSMitigationFlowLogs'
-        enabled: true
-      }
-      {
-        category: 'DDoSMitigationReports'
+        categoryGroup: 'allLogs'
         enabled: true
       }
     ]
@@ -372,7 +364,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
         connectionDraining: backendHttpSetting.connectionDraining
         probe: contains(backendHttpSetting, 'probeName') ? json('{"id": "${resourceId('Microsoft.Network/applicationGateways/probes', applicationGatewayName, backendHttpSetting.probeName)}"}') : null
         trustedRootCertificates: contains(backendHttpSetting, 'trustedRootCertificate') ? json('[{"id": "${resourceId('Microsoft.Network/applicationGateways/trustedRootCertificates', applicationGatewayName, backendHttpSetting.trustedRootCertificate)}"}]') : null
-        hostName: contains(backendHttpSetting, 'hostName') ? backendHttpSetting.hostName : null
+        // hostName: contains(backendHttpSetting, 'hostName') ? backendHttpSetting.hostName : json('null')
         pickHostNameFromBackendAddress: contains(backendHttpSetting, 'pickHostNameFromBackendAddress') ? backendHttpSetting.pickHostNameFromBackendAddress : false
       }
     }]
@@ -429,15 +421,7 @@ resource applicationGatewayDiagnostics 'microsoft.insights/diagnosticSettings@20
     storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
     logs: [
       {
-        category: 'ApplicationGatewayAccessLog'
-        enabled: true
-      }
-      {
-        category: 'ApplicationGatewayPerformanceLog'
-        enabled: true
-      }
-      {
-        category: 'ApplicationGatewayFirewallLog'
+        categoryGroup: 'allLogs'
         enabled: true
       }
     ]

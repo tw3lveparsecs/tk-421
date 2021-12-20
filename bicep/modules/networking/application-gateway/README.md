@@ -34,8 +34,7 @@ module appGateway 'applicationgateway.bicep' = {
     httpListeners: [
       {
         name: 'MyHttpListener'
-        protocol: 'Http'
-        port: 80
+        protocol: 'Http'        
         frontEndPort: 'port_80'
       }
     ]
@@ -105,8 +104,7 @@ module appGateway 'applicationgateway.bicep' = {
     httpListeners: [
       {
         name: 'MyHttpListener'
-        protocol: 'Http'
-        port: 80
+        protocol: 'Http'        
         frontEndPort: 'port_80'
       }
     ]
@@ -191,8 +189,7 @@ module appGateway 'applicationgateway.bicep' = {
     httpListeners: [
       {
         name: 'MyHttpListener'
-        protocol: 'Http'
-        port: 80
+        protocol: 'Http'        
         frontEndPort: 'port_80'
       }
     ]
@@ -288,8 +285,7 @@ module appGateway 'applicationgateway.bicep' = {
     httpListeners: [
       {
         name: 'MyHttpListener'
-        protocol: 'Http'
-        port: 80
+        protocol: 'Http'        
         frontEndPort: 'port_80'
       }
     ]
@@ -368,8 +364,7 @@ module appGateway 'applicationgateway.bicep' = {
     httpListeners: [
       {
         name: 'MyHttpListener'
-        protocol: 'Http'
-        port: 80
+        protocol: 'Http'        
         frontEndPort: 'port_80'
       }
       {

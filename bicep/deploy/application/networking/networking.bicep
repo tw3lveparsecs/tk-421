@@ -24,6 +24,17 @@ param appGwName string
   vNetName: 'Application Gateway virtual network name'
   subnetName: 'Application Gateway subnet name'
   managedIdentityResourceId: 'Application Gateway managed identity resource id'
+  firewallPolicySettings: {
+    requestBodyCheck: 'Bool to enable request body check'
+    maxRequestBodySizeInKb: 'Integer containing max request body size in kb'
+    fileUploadLimitInMb: 'Integer containing file upload limit in mb'
+    state: 'Enabled/Disabled. Configures firewall policy settings'
+    mode: 'Sets the detection mode'
+  }
+  firewallPolicyManagedRuleSets: {
+    ruleSetType: 'Rule set type'
+    ruleSetVersion: 'Rule set version'
+  }
 })
 param appGwSettings object
 
@@ -81,10 +92,9 @@ var appGwHttpListeners = [
   {
     name: '${env}-https-443-lst'
     protocol: 'Https'
-    port: 443
     frontEndPort: 'port_443'
     sslCertificate: appGwCertificates.sslCertificates[0].name
-    hostName: 'aksbaseline.tk421.com'
+    hostName: 'tk421.aksbaseline.com'
     firewallPolicy: 'Enabled'
     requireServerNameIndication: true
   }
@@ -94,7 +104,7 @@ var appGwBackendAddressPools = [
     name: '${env}-aksbaseline-bpl'
     backendAddresses: [
       {
-        fqdn: 'aksbaseline-ingress.tk421.com'
+        fqdn: 'tk421-ingress.aksbaseline.com'
       }
     ]
   }
@@ -148,11 +158,7 @@ module appGateway '../../../modules/networking/application-gateway/applicationga
     backendAddressPools: appGwBackendAddressPools
     backendHttpSettings: appGwBackendHttpSettings
     rules: appGwRules
-    // enableDiagnostics: true
-    // logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
-    // diagnosticStorageAccountId: diagnosticLogsStorageId
+    firewallPolicyManagedRuleSets: appGwSettings.firewallPolicyManagedRuleSets
+    firewallPolicySettings: appGwSettings.firewallPolicySettings
   }
 }
-
-// fix backendsettings with aks baseline
-// add firewall policy settings
