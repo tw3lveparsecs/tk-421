@@ -159,3 +159,6 @@ resource scheduledQueryRule 'Microsoft.Insights/scheduledQueryRules@2018-04-16' 
     action: action
   }
 }
+
+output name string = scheduledQueryRule.name
+output id string = scheduledQueryRule.id

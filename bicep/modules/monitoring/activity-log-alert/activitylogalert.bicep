@@ -45,3 +45,6 @@ resource activityLogAlert 'Microsoft.Insights/activityLogAlerts@2020-10-01' = {
     scopes: scopes
   }
 }
+
+output name string = activityLogAlert.name
+output id string = activityLogAlert.id

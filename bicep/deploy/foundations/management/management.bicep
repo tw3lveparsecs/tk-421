@@ -55,18 +55,32 @@ module logAnalytics '../../../modules/monitoring/log-analytics/loganalytics.bice
 STORAGE
 ======================================================================*/
 var flowlogsStorageName = '${env}${orgShortName}${primaryLocationCode}flowlogsstg'
+var diaglogsStorageName = '${env}${orgShortName}${primaryLocationCode}diaglogsstg'
 var storageKind = 'StorageV2'
 var storageSku = 'Standard_LRS'
 var storageTier = 'Hot'
 var deleteRetentionPolicy = 30
 
-param storDeploymentName string = 'storage${utcNow()}'
+param flowLogDeploymentName string = 'storageFlow${utcNow()}'
+param diagLogDeploymentName string = 'storageDiag${utcNow()}'
 
 module flowLogsStorage '../../../modules/management/storage/storage.bicep' = {
-  name: storDeploymentName
+  name: flowLogDeploymentName
   scope: resourceGroup(monitorHubRG.name)
   params: {
     storageAccountName: flowlogsStorageName
+    storageKind: storageKind
+    storageSku: storageSku
+    storageTier: storageTier
+    deleteRetentionPolicy: deleteRetentionPolicy
+  }
+}
+
+module diagLogsStorage '../../../modules/management/storage/storage.bicep' = {
+  name: diagLogDeploymentName
+  scope: resourceGroup(monitorHubRG.name)
+  params: {
+    storageAccountName: diaglogsStorageName
     storageKind: storageKind
     storageSku: storageSku
     storageTier: storageTier
@@ -78,3 +92,4 @@ OUTPUTS
 ======================================================================*/
 output logAnalyticsId string = logAnalytics.outputs.id
 output flowlogsStorageId string = flowLogsStorage.outputs.id
+output diaglogsStorageId string = diagLogsStorage.outputs.id

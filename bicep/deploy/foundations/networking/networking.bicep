@@ -17,6 +17,9 @@ param logAnalyticsWorkspaceId string
 
 @description('Flow logs storage account resource id')
 param flowLogsStorageId string
+
+@description('Diagnostic logs storage account resource id')
+param diagnosticLogsStorageId string
 /*======================================================================
 RESOURCE GROUPS
 ======================================================================*/
@@ -453,7 +456,7 @@ var vnetHubSubnets = [
     nsgId: appGwNsg.outputs.id
   }
 ]
-var vnetSpokeName = '${env}-${primaryLocationCode}-straightshooter-vnw'
+var vnetSpokeName = '${env}-${primaryLocationCode}-aksbaseline-vnw'
 var vnetSpokeAddressSpace = [
   '10.24.0.0/16'
 ]
@@ -563,5 +566,123 @@ module kvPrivateDnsZone '../../../modules/networking/private-dns-zone/private-dn
     privateDnsZoneName: kvPrivateDnsName
     enableVnetLink: true
     vnetResourceId: vnetHub.outputs.id
+  }
+}
+/*======================================================================
+MANAGED IDENTITY
+======================================================================*/
+param userIdentityDeploymentName string = 'umi${utcNow()}'
+
+var managedIdentityName = '${appGwName}-umi'
+
+module appGwIdentity '../../../modules/identity/managed-identity/usermanagedidentity.bicep' = {
+  name: userIdentityDeploymentName
+  scope: resourceGroup(networkHubRG.name)
+  params: {
+    managedIdentityName: managedIdentityName
+  }
+}
+/*======================================================================
+APPLICATION GATEWAY
+======================================================================*/
+param appGwDeploymentName string = 'appGw${utcNow()}'
+
+var appGwName = '${env}-${primaryLocationCode}-hub-agw'
+var appGwSettings = {
+  sku: 'WAF_v2'
+  tier: 'WAF_v2'
+  enableWebApplicationFirewall: true
+  firewallPolicyName: '${appGwName}-pol'
+  publicIpAddressName: '${appGwName}-pip'
+  vNetResourceGroup: networkHubRG.name
+  vNetName: vnetHub.outputs.name
+  subnetName: 'AzureWAFSubnet'
+  managedIdentityResourceId: appGwIdentity.outputs.id
+}
+var appGwFrontEndPorts = [
+  {
+    name: 'port_80'
+    port: 80
+  }
+]
+var appGwHttpListeners = [
+  {
+    name: '${env}-http-80-lst'
+    protocol: 'Http'
+    port: 80
+    frontEndPort: 'port_80'
+  }
+]
+var appGwBackendAddressPools = [
+  {
+    name: '${env}-temp-bpl'
+    backendAddresses: [
+      {
+        ipAddress: '10.1.2.3'
+      }
+    ]
+  }
+]
+var appGwBackendHttpSettings = [
+  {
+    name: '${env}-temp-bes'
+    port: 80
+    protocol: 'Http'
+    cookieBasedAffinity: 'Enabled'
+    affinityCookieName: 'MyCookieAffinityName'
+    requestTimeout: 300
+    connectionDraining: {
+      drainTimeoutInSec: 60
+      enabled: true
+    }
+  }
+]
+var appGwRules = [
+  {
+    name: '${env}-http-80-temp-rle'
+    ruleType: 'Basic'
+    listener: appGwHttpListeners[0].name
+    backendPool: appGwBackendAddressPools[0].name
+    backendHttpSettings: appGwBackendHttpSettings[0].name
+  }
+]
+var appGwFirewallPolicySettings = {
+  requestBodyCheck: true
+  maxRequestBodySizeInKb: 128
+  fileUploadLimitInMb: 100
+  state: 'Enabled'
+  mode: 'Prevention'
+}
+var appGwFirewallPolicyManagedRuleSets = [
+  {
+    ruleSetType: 'OWASP'
+    ruleSetVersion: '3.2'
+  }
+]
+
+module appGateway '../../../modules/networking/application-gateway/applicationgateway.bicep' = {
+  name: appGwDeploymentName
+  scope: resourceGroup(networkHubRG.name)
+  params: {
+    applicationGatewayName: appGwName
+    sku: appGwSettings.sku
+    tier: appGwSettings.tier
+    enableWebApplicationFirewall: appGwSettings.enableWebApplicationFirewall
+    firewallPolicyName: appGwSettings.firewallPolicyName
+    publicIpAddressName: appGwSettings.publicIpAddressName
+    vNetResourceGroup: appGwSettings.vNetResourceGroup
+    vNetName: appGwSettings.vNetName
+    subnetName: appGwSettings.subnetName
+    managedIdentityResourceId: appGwSettings.managedIdentityResourceId
+    frontEndPorts: appGwFrontEndPorts
+    httpListeners: appGwHttpListeners
+    backendAddressPools: appGwBackendAddressPools
+    backendHttpSettings: appGwBackendHttpSettings
+    rules: appGwRules
+    enableDiagnostics: true
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    diagnosticStorageAccountId: diagnosticLogsStorageId
+    firewallPolicySettings: appGwFirewallPolicySettings
+    firewallPolicyManagedRuleSets: appGwFirewallPolicyManagedRuleSets
   }
 }
